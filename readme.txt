@@ -15,9 +15,16 @@ python manage.py shell
 from apps.anime.models import Anime 
 
 --git first create only--
- git init
- git config --global user.name rkouno
- git config ==global user.email rkouni@odp.co.jp
+git init
+git config --global user.name rkouno
+git config ==global user.email rkouni@odp.co.jp
+git remote add origin https://github.com/rkouno/todoapps.git
+git push -u origin master
+
+--pythonanywhere first create only--
+pip3.6 install --user pythonanywhere
+pa_autoconfigure_django.py --python=3.6 https://github.com/rkouno/todoapps.git
+python manage.py createsuperuser
 
 --Git--
 git status
