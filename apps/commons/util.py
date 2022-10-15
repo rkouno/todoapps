@@ -1,11 +1,13 @@
-from genericpath import isdir, isfile
 import glob
-import re
-import urllib.parse
 import os
+import re
 import shutil
+import urllib.parse
+
 import requests
 from bs4 import BeautifulSoup
+from genericpath import isdir, isfile
+
 
 class utils:
     """

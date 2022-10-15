@@ -1,8 +1,10 @@
 import secrets
+
+from django.shortcuts import redirect, render
+
 from apps.commons.const import appconst
-from django.shortcuts import render, redirect
-from .import service
-from .import service_pdf
+
+from . import service, service_pdf
 
 # Create your views here.
 """

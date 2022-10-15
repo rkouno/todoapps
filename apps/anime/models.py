@@ -2,9 +2,11 @@ from ast import keyword
 from statistics import mode
 from tabnanny import verbose
 from tokenize import group
+
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+
 
 # Create your models here.
 class Anime(models.Model):

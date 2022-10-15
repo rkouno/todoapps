@@ -29,7 +29,7 @@ python manage.py createsuperuser
 --Git--
 git status
 git add --all
-git commit -m "test"
+git commit -m "isort change"
 git push
 
 --pythonanywhere--

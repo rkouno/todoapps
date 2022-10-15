@@ -1,7 +1,9 @@
 from django.db.models import Min
-from .models import Adult, Anime, Video
-from apps.commons.util import utils
+
 from apps.commons.const import appconst
+from apps.commons.util import utils
+
+from .models import Adult, Anime, Video
 
 """
 Video

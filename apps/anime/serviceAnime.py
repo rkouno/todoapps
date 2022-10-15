@@ -1,14 +1,14 @@
+import datetime
+import re
 from asyncio.windows_events import NULL
 from tokenize import group
 from urllib import request
+
 from django.utils import timezone
 
 from apps.anime.models import Anime, Torrent
-from apps.commons.util import utils
 from apps.commons.const import appconst
-
-import datetime
-import re
+from apps.commons.util import utils
 
 """
 Anime

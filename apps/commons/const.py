@@ -1,8 +1,9 @@
 
-import socket
 import os
+import socket
 
 from config.settings.base import BASE_DIR
+
 
 class appconst:
     """

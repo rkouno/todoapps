@@ -1,9 +1,11 @@
+import re
 from urllib import request
-from .models import Torrent
+
 from apps.commons.const import appconst
 from apps.commons.util import utils
 
-import re
+from .models import Torrent
+
 
 def webscraping():
     # 削除
