@@ -1,0 +1,43 @@
+{% load static %}
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>ToDo管理システム</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+        <link rel="stylesheet" href="{% static 'css/site.css' %}">
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script type="text/javascript" src="js/common.js"></script>
+
+    </head>
+    <body>
+        <div class="header page-header ">
+            <h1><a href="/">Todo Managemant System</a></h1>
+        </div>
+        <input type="checkbox" class="openSidebarMenu" id="openSidebarMenu">
+        <label for="openSidebarMenu" class="sidebarIconToggle">
+            <div class="spinner diagonal part-1"></div>
+            <div class="spinner horizontal"></div>
+            <div class="spinner diagonal part-2"></div>
+        </label>
+        <div id="sidebarMenu">
+            <ul class="sidebarMenuInner">
+                <li><a href="/anime">Anime</a><span>今期アニメのダウンロード</span></li>
+                <li><a href="/anime/video">Video</a><span>ダウンロード済みアニメの視聴</span></li>
+                <li><a href="/anime/adultvideo">Adult Video</a><span>ダウンロード済みエロアニメの視聴</span></li>
+                <li><a href="/book/create">Create book</a><span>ダウンロード済み漫画・小説のPDF作成</span></li>
+                <li><a href="/book">Book</a></li>
+                <li><a href="/book/adult">Adult</a><span>成年コミックのダウンロード</span></li>
+            </ul>
+        </div>
+        <div id='center' class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main center">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
+  

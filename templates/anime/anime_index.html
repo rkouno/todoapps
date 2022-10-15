@@ -1,0 +1,58 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+<p>
+    <form mothod="POST">
+        <!-- 新規作成 -->
+        <a href="{% url 'anime_new' %}" class="btn btn-primary">
+            new create
+        </a>
+        <!-- ダウンロード -->
+        <button type="submit" name="download" class="btn btn-success">download</button>
+        <!-- 全件表示 -->
+        <button type="submit" name="all" class="btn btn-info">show all</button>
+    </form>
+</p>
+<div class="post">
+    <!-- 一覧 -->
+    <thread class="sticke-top table-dark" style="z-index:1">
+        <table class="table table-striped table-hober table-condensed table-sm">
+            <tr>
+                <th>タイトル</th>
+                <th>放送終了日</th>
+                <th>更新日</th>
+                <th></th>
+            </tr>
+        </thread>
+        <tbody>
+            {% for anime in animes %}
+            <tr>
+                <td><a href="{% url 'anime_edit' pk=anime.id %}">{{ anime.title }}</a></td>
+                <td>{{ anime.dtEnd }}</td>
+                <td>{{ anime.dtUpdate }}</td>
+                <td><input type="hidden" value="{{ anime.keyword }}"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- トースト -->
+<script src="https://riversun.github.io/jsframe/jsframe.js"></script>
+<script>
+    const jsFrame = new JSFrame();
+    jsFrame.showToast({
+        html: 'This is a simple toast', align: 'top', duration: 2000
+    });
+    $(document).ready(function(){
+        $('input[type="hidden"]').each(function(i,element){
+            if($(element).val() == ''){
+                console.log(element);
+                $(element).closest('tr').css('background-color','AntiqueWhite');
+            }
+        });
+    });
+</script>
+{% endblock %}
+            
+
+        

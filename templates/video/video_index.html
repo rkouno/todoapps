@@ -1,0 +1,52 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+<form method="POST">
+    <p>
+        {% if 'adult' in request.path %}
+            <a href="{% url 'hentai_list' %}" class="btn btn-info">Get adult list</a>
+        {% else %}
+            <a href="{% url 'video_list' %}" class="btn btn-success">Get video list</a>
+        {% endif %}
+    </p>
+</form>
+<!-- 一覧 -->
+<thread class="sticke-top table-dark" style="z-index:1">
+    <table class="table table-striped table-hober table-condensed table-sm">
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>タイトル</th>
+            <th>話</th>
+        </tr>
+    </thread>
+    <tbody>
+        {% for video in videos %}
+        <tr>
+            {% if 'adult' in request.path %}
+                <td><a href="{% url 'video_watch' id=video.last_id tag='adult' %}" class="btn btn-sm btn-primary">watch</a></td>
+                <td><a href="{% url 'video_download' id=video.last_id tag='adult' %}" class="btn btn-sm btn-info">download</a></td>
+                <td><a href="{% url 'video_delete' id=video.last_id tag='adult' %}" class="btn btn-sm btn-secondary">delete</a></td>
+            {% else %}
+                <td><a href="{% url 'video_watch' id=video.last_id tag='video' %}" class="btn btn-sm btn-primary">watch</a></td>
+                <td><a href="{% url 'video_download' id=video.last_id tag='video' %}" class="btn btn-sm btn-info">download</a></td>
+                <td><a href="{% url 'video_delete' id=video.last_id tag='video' %}" class="btn btn-sm btn-secondary">delete</a></td>
+            {% endif %}
+            <td>{{ video.group }}</td>
+            <td>{{ video.last_episode }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- トースト -->
+<script src="https://riversun.github.io/jsframe/jsframe.js"></script>
+<script>
+    const jsFrame = new JSFrame();
+    jsFrame.showToast({
+        html: 'This is a simple toast', align: 'top', duration: 2000 ,zindex:''
+    });
+</script>
+{% endblock %}
+
+        

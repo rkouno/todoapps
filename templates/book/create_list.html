@@ -1,0 +1,13 @@
+{% extends 'common/base.html' %}
+{% block content %}
+
+
+
+<script src="https://riversun.github.io/jsframe/jsframe.js"></script>
+<script>
+    const jsFrame = new JSFrame();
+    jsFrame.showToast({
+        html: 'This is a simple toast test', align: 'top', duration: 2000
+    });
+</script>
+{% endblock %}

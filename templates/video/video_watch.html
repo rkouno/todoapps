@@ -1,0 +1,38 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <h4>{{ video.title }}</h4>
+        <hr />
+    </div>
+
+    <!-- autoplay="autoplay" 自動再生の有効化 -->
+    <!-- controls            ビデオ再生のコントロールを表示 -->
+    <!-- playsinline         インライン再生の有効化 -->
+    <video controls autoplay="autoplay" playsinline class="col-12">
+        <source src="{{ video.url }}" type="video/mp4" />
+        <source src="{{ video.url }}" type="mkv-video/webm" />
+        <source src="{{ video.url }}" type="video/webm" />
+        <source src="{{ video.url }}" type="video/x-matroska" />
+        Your browser does not support HTML5 video.
+    </video>
+    <form mothod="POST">
+        <div style="padding:5px">
+            <button type="submit" name="watched" class="btn btn-primary">watched</button>
+            <button type="submit" name="next" class="btn btn-info">next</button>
+            <button type="submit" name="delete" class="btn btn-secondary">delete</button>
+            <a href="{{request.META.HTTP_REFERER}}" class="save btn btn-outline-dark">back</a>
+        </div>
+    </form>
+</div>
+
+<!-- トースト -->
+<script src="https://riversun.github.io/jsframe/jsframe.js"></script>
+<script>
+    const jsFrame = new JSFrame();
+    jsFrame.showToast({
+        html: 'This is a simple toast', align: 'top', duration: 2000
+    });
+</script>
+{% endblock %}

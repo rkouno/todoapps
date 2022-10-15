@@ -1,0 +1,16 @@
+{% extends 'common/base.html' %}
+
+{% block content %}
+    <h2>Create Anime</h2>
+    <form method="POST" class="post-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="save" class="btn btn-primary">Save</button>
+        <button type="submit" name="delete" class="btn btn-secondary">Delete</button>
+        <a href="{{ request.META.HTTP_REFERER }}" class="save btn btn-outline-dark">back</a>
+    </form>
+    
+    <!-- カレンダー -->
+    <script type="text/javascript">
+    </script>
+{% endblock %}
