@@ -26,6 +26,9 @@ pip3.6 install --user pythonanywhere
 pa_autoconfigure_django.py --python=3.6 https://github.com/rkouno/todoapps.git
 python manage.py createsuperuser
 
+--再インストール--
+pa_autoconfigure_django.py --nuke --python=3.6 https://github.com/rkouno/todoapps.git
+
 --Git--
 git status
 git add --all .
