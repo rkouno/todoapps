@@ -29,6 +29,11 @@ python manage.py createsuperuser
 --再インストール--
 pa_autoconfigure_django.py --nuke --python=3.6 https://github.com/rkouno/todoapps.git
 
+
+--静的ファイルの適用 pythonanywhere--
+workon rkouno.pythonanywhere.com
+~$ python manage.py collectstatic
+
 --Git--
 git status
 git add --all .
