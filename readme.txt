@@ -17,7 +17,7 @@ from apps.anime.models import Anime
 --git first create only--
 git init
 git config --global user.name rkouno
-git config ==global user.email rkouni@odp.co.jp
+git config --global user.email rkouno@odp.co.jp
 git remote add origin https://github.com/rkouno/todoapps.git
 git push -u origin master
 
@@ -28,7 +28,7 @@ python manage.py createsuperuser
 
 --Git--
 git status
-git add --all
+git add --all .
 git commit -m "isort change"
 git push
 
