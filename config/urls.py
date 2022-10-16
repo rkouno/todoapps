@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-import settings
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
@@ -24,5 +23,6 @@ urlpatterns = [
     path('', include('apps.home.urls')),
     path('anime/', include('apps.anime.urls')),
     path('book/', include('apps.book.urls')),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
- + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
+]
+# + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
+#  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
