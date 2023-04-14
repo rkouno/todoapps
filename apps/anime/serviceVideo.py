@@ -1,9 +1,9 @@
 from django.db.models import Min
-
 from apps.commons.const import appconst
 from apps.commons.util import utils
-
 from .models import Adult, Anime, Video
+
+import urllib.parse
 
 """
 Video
@@ -35,7 +35,8 @@ def registVideo(tag, folder_path, watched_path):
         videoFiles = utils.getFiles(folder_path, appconst.EXTENTION_VIDEO)
         for file in videoFiles:
             title = utils.getFileName(file)
-            url = file.replace(appconst.FOLDER_BASE, '')
+            url = file.replace(appconst.FOLDER_MEDIA, appconst.URL)
+            url = url.replace(title,urllib.parse.quote(title))
             episode = utils.getRegex(file, '- \d\d').replace('-', '').strip()
             if episode == '':
                 episode = 0
@@ -87,7 +88,7 @@ def next(tag, id):
     elif tag in 'adult':
         video = Video.objects.get(id__exact=id)
         next_video = Video.objects.filter(id=id+1, group=video.group).first()
-    if next_video is None:
-        return None
-    else:
+    if next_video:
         return next_video
+    else:
+        return None

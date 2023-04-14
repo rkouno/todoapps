@@ -11,8 +11,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script type="text/javascript" src="js/common.js"></script>
-
+        <script src="{% static 'js/common.js' %}"></script>   
     </head>
     <body>
         <div class="header page-header ">
@@ -30,8 +29,11 @@
                 <li><a href="/anime/video">Video</a><span>ダウンロード済みアニメの視聴</span></li>
                 <li><a href="/anime/adultvideo">Adult Video</a><span>ダウンロード済みエロアニメの視聴</span></li>
                 <li><a href="/book/create">Create book</a><span>ダウンロード済み漫画・小説のPDF作成</span></li>
-                <li><a href="/book">Book</a></li>
-                <li><a href="/book/adult">Adult</a><span>成年コミックのダウンロード</span></li>
+                <li><a href="/book/comic">Comic</a><span>一般コミック</span></li>
+                <li><a href="/book/novel">Novel</a><span>一般小説</span></li>
+                <li><a href="/book/adult">Adult</a><span>成年コミック・成年小説</span></li>
+                <li><a href="/book/revice">Revice</a><span>要修正リスト</span></li>
+                <li><a href="/book/adultlist">Adult</a><span>成年コミックのダウンロード</span></li>
             </ul>
         </div>
         <div id='center' class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main center">

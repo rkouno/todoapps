@@ -1,1 +1,2 @@
 Django~=3.2.10
+wfastcgi~=3.0.0

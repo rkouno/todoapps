@@ -1,4 +1,3 @@
-import datetime
 import re
 from tokenize import group
 from urllib import request
@@ -14,7 +13,7 @@ Anime
 """
 # 一覧取得（今期のみ）
 def retriveAnime():
-    return Anime.objects.filter(dtEnd__gte = timezone.now() + datetime.timedelta(days=-14)).order_by('dtUpdate', 'title')
+    return Anime.objects.filter(isEnd = False).order_by('-dtUpdate', 'title')
 # 一覧取得（全件）
 def retriveAnimeAll():
     return Anime.objects.order_by('-dtUpdate', 'title')
@@ -28,7 +27,7 @@ def download():
             for item in re.split('<item>', str(html)):
                 title = re.search('<title>.*</title>', item).group().replace('<title>', '').replace('</title>', '')
                 link = re.search('.*https://nyaa.si/download/.*', item)
-                if not link is None:
+                if link:
                     link = link.group().replace('<link/>', '')
                     # torrentファイル名
                     file_name = title + '.torrent'

@@ -16,20 +16,34 @@ class utils:
     def getFiles(path, extentions):
         files = []
         for extentoin in extentions:
-            files.extend(glob.glob(f'{path}\*.{extentoin}'))
-        return sorted(files)
+            files.extend(glob.glob(f'{glob.escape(path)}/**/*.{extentoin}', recursive=True))
+        return sorted(set(files))
+
     """
     所定フォルダ以下のフォルダを取得する
     """
-    def getFolders(path):
-        folders = [ file_dir for file_dir in glob.glob(f'{path}/**',recursive=True) if os.path.isdir(file_dir) ] 
-        return folders
+    def getFolders(path, extentions):
+        folders = []
+        for extention in extentions:
+            for folder in glob.glob(f'{glob.escape(path)}/**/*.{extention}', recursive=True):
+                folders.append(os.path.dirname(folder))
+
+        return list(set(folders))
     """
     パスからファイル名を取得
     """
     def getFileName(path):
-        file_name = os.path.basename(path)
+        file_name = os.path.basename(path).replace('\\','/')
         return file_name
+        
+    """
+    拡張子を取得
+    """
+    def getExtention(file):
+        if os.path.isfile(file):
+            file, ext = os.path.splitext(file)
+            return ext
+        return ''
     """
     正規表現
     """
@@ -40,6 +54,18 @@ class utils:
         except Exception as e:
             result = ''
         return result
+    """
+    正規表現を使って数値のみを取得
+    """
+    def getVolume(text, regex):
+        text = text.translate(str.maketrans({"０": '0', "１": '1', "２": "2", "３": "3", "４": "4", "５": "5", "６": "6", "７": "7", "８": "8", "９": "9"}))
+        result = utils.getRegex(text.lower(), regex)
+        for volume in re.findall(r'\d+\.\d+|\d+', result):
+            if float(volume).is_integer():
+                return int(float(volume))
+            else:
+                return float(volume)
+        return 0
     """
     Webスクレイピング
     """
@@ -53,10 +79,20 @@ class utils:
     def encode(str):
         return urllib.parse.quote(str)
     """
-    エンコード
+    デコード
     """ 
     def decode(str):
         return urllib.parse.unquote(str)
+    """
+    ファイルの存在チェック
+    """
+    def existFile(file):
+        return os.path.isfile(file)
+    """
+    ファイル判定
+    """
+    def isFolder(path):
+        return not os.path.isfile(path)
     """
     ファイル削除
     """
@@ -64,9 +100,9 @@ class utils:
         if os.path.isfile(path):
             os.remove(path)
     """
-    フォルダ削除
+    空フォルダ削除
     """
-    def folderDelete(path):
+    def folderEmptyDelete(path):
         for folder in glob.glob(f'{path}/**/', recursive=True):
             try:
                 # 空ディレクトリのみ削除（なお子ディレクトリが空になれば親も削除）
@@ -74,6 +110,11 @@ class utils:
                 print(f'delete : {folder}')
             except OSError:
                 pass
+    """
+    中身ごとフォルダ削除
+    """
+    def folder_delete(path):
+        shutil.rmtree(path)
     """
     ファイル移動
     """
@@ -87,7 +128,7 @@ class utils:
             else:
                 # パスからディレクトリを取得
                 dir = os.path.dirname(after_dir_or_file)
-                if not os.oath.isdir(dir):
+                if not os.path.isdir(dir):
                     # ディレクトリが存在しない場合
                     os.makedirs(dir)
                 # 移動先のパスがファイルである場合

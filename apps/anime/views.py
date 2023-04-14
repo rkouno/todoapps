@@ -3,7 +3,6 @@ from tkinter import Grid
 
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 
 from apps.anime import serviceAnime, serviceVideo
 from apps.anime.forms import AnimeForm
@@ -18,13 +17,14 @@ from apps.commons.const import appconst
 def anime_list(request):
     try:
         # アニメリストを取得
-        animes = serviceAnime.retriveAnimeAll()
-
         if request.method == 'GET':
             if len(request.GET) == 0:
-                animes.filter(dtEnd__gte = timezone.now() - datetime.timedelta(days=14))
+                animes = serviceAnime.retriveAnime()
             elif 'download' in request.GET:
                 serviceAnime.download()
+                animes = serviceAnime.retriveAnime()
+            else:
+                animes = serviceAnime.retriveAnimeAll()
 
         return render(request, 'anime/anime_index.html', {'animes' : animes})
     except Exception as e:
@@ -94,7 +94,7 @@ def video_watch(request, id, tag):
     elif "next" in request.GET :
         serviceVideo.process(tag, id, 'move')
         video = serviceVideo.next(tag, id)
-        if not video is None:
+        if video:
             return redirect('video_watch', id = video.id, tag = 'video')
     elif "watched" in request.GET:
         serviceVideo.process(tag, id, 'move')

@@ -18,17 +18,20 @@ class appconst:
     """
     IIS プロトコル 
     """
-    PROTCOL = "https://"
+    PROTCOL = "http://"
     IP_ADDRESS = socket.gethostbyname(socket.gethostname())
-    URL = PROTCOL + IP_ADDRESS
-
+    URL = PROTCOL + IP_ADDRESS + '/Video/'
+    TORRENT_URL = PROTCOL + IP_ADDRESS + '/Torrent/'
+    MEDIA_URL = PROTCOL + IP_ADDRESS + ':8080/'
     """
     ディレクトリ
     """
     FOLDER_TORRENT = 'C:/Torrent/'
     FOLDER_DOWNLOAD = 'D:/download/'
+    FOLDER_TODOAPPS = 'D:\\todoapps\\'
     FOLDER_BASE = BASE_DIR
     FOLDER_STATIC= os.path.join(BASE_DIR, 'static/')
+    FOLDER_MEDIA= os.path.join(FOLDER_STATIC, 'media/')
 
     FOLDER_ROOT_BOOK = os.path.join(FOLDER_STATIC, 'book/')
     FOLDER_BOOK_ADULT = os.path.join(FOLDER_ROOT_BOOK, 'adult/')
@@ -49,7 +52,7 @@ class appconst:
     """
     拡張子
     """
-    EXTENTION_IMAGE = ("pdf", "png", "PNG", "jpeg", "jpg", "JPG")
+    EXTENTION_IMAGE = ("png", "PNG", "jpeg", "jpg", "JPG")
     EXTENTION_BOOK = ("pdf", "epub")
     EXTENTION_VIDEO = ("mp4", "mkv")
     EXTENTION_ZIP = ("zip", "rar")
@@ -61,5 +64,15 @@ class appconst:
     REGEX_AUTHOR = "\[.+?\]|【.+?】"
     REGEX_AUTHOR_NONE_BRACKETS = "(?<=\[).*?(?=\])|(?<=\【).*?(?=\】)"
     REGEX_NUM = "\d+.\d+|\d+"
-    REGEX_VOLUME = "v\d+.\d+,第\d+.\d+巻,v\d+,第\d+巻,\d+.\d+,\d+"
+    REGEX_VOLUME = r"v\d+.\d+|第\d+.\d+巻|v\d+|第\d+巻|\d+.\d+|\d+"
     REGEX_BRACKETS = "\[.*\] | \(.*\)|\[.*\].| "
+
+    """
+    定数
+    """
+    COMIC=1
+    NOVEL=2
+    ADULT=3
+    ADULT_NOVEL=4
+    # 8MB ずつ読み込む
+    chunksize = 8 * (1024 ** 2)

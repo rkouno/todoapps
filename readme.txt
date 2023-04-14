@@ -1,3 +1,10 @@
+pip install django
+pip install requests
+pip install beautifulsoup4
+pip install wfastcgi
+pip install psycopg2
+pip install img2pdf
+
 --新規アプリ作成系--
 1 python manage.py startapp アプリケーション名
 2 urls.py作成
@@ -29,7 +36,6 @@ python manage.py createsuperuser
 --再インストール--
 pa_autoconfigure_django.py --nuke --python=3.6 https://github.com/rkouno/todoapps.git
 
-
 --静的ファイルの適用 pythonanywhere--
 workon rkouno.pythonanywhere.com
 ~$ python manage.py collectstatic
@@ -43,3 +49,6 @@ git push
 --pythonanywhere--
 cd rkouno.pythonanywhere.com
 git pull
+
+--IIS--
+%windir%\system32\inetsrv\appcmd unlock config -section:system.webServer/handlers
