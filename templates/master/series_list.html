@@ -3,6 +3,18 @@
 
 <div class="card">
     <div class="card-body">
+        <!-- 検索 -->
+        <div class="row">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-sm-5"><input type="text" name="txtSearch" value="{{ request.session.txtSearch }}" class="form-control" /></div>
+                    <div class="col-sm-2"><button type="submit" name="search" class="btn btn-success">search</button></div>
+                </div>
+            </form>
+        </div>
+        <!-- #検索 -->
+        <!-- タブヘッダー -->
         <ul class="nav nav-tabs nav-tabs-bordered" id="borderedTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#bordered-home"
@@ -13,6 +25,7 @@
                     type="button" role="tab" aria-controls="profile" aria-selected="false">Hentai</button>
             </li>
         </ul>
+        <!-- #タブヘッダー -->
         <div class="tab-content pt-2" id="borderedTabContent">
             <div class="tab-pane fade show active" id="bordered-home" role="tabpanel" aria-labelledby="home-tab">
                 <!-- 一般コミック・小説 -->
@@ -20,14 +33,14 @@
                     <thread class="sticke-top table-dark" style="z-index:1">
                         <tr>
                             <th>Title</th>
-                            <th></th>
+                            <th>Status</th>
                         </tr>
                     </thread>
                     <tbody>
                         {% for model in generals %}
                         <tr>
-                            <td>{{ model.name }}</td>
-                            <td><a href="{% url 'adult_edit' model.id %}" class="btn btn-sm btn-success">edit</a></td>
+                            <td><a href="{% url 'series_edit' model.slug %}">{{ model.name }}</a></td>
+                            <td>{{ model.status }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -40,14 +53,12 @@
                     <thread class="sticke-top table-dark" style="z-index:1">
                         <tr>
                             <th>Title</th>
-                            <th></th>
                         </tr>
                     </thread>
                     <tbody>
                         {% for model in adults %}
                         <tr>
-                            <td>{{ model.name }}</td>
-                            <td><a href="{% url 'adult_edit' model.id %}" class="btn btn-sm btn-success">edit</a></td>
+                            <td><a href="{% url 'series_edit' model.slug %}" >{{ model.name }}</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -57,5 +68,4 @@
         </div>
     </div>
 </div>
-
 {% endblock %}

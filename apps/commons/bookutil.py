@@ -1,8 +1,15 @@
-from apps.commons.util import utils
-from apps.book.models import Info,Author
+# common
 from apps.commons.const import appconst
+
+# util
 import img2pdf 
 import os
+from apps.commons.util import utils
+from django.db.models import Q
+
+# service
+from apps.commons.services import service_author   as sa
+from apps.commons.services import service_bookInfo as si
 
 class book_util:
     
@@ -29,9 +36,9 @@ class book_util:
             return ''
     
     def get_title(genrue_id, title):
-        print(title)
-        sql = f"SELECT * FROM BOOK_INFO WHERE '{title}' LIKE '%' || TITLE || '%' || SUB_TITLE || '%' AND ({genrue_id} = 0 OR GENRUE_ID = {genrue_id}) AND SUB_TITLE <> '' "
-        bi = Info.objects.raw(sql)
+        title = title.replace('\'','''''')
+        sql = "SELECT * FROM BOOK_INFO WHERE '%%%s%%' LIKE '%%' || TITLE || '%%' || SUB_TITLE || '%%' AND (%s = 0 OR GENRUE_ID = %s) AND SUB_TITLE <> ''" % (str(title), genrue_id, genrue_id)
+        bi = si.rawObjects(sql )
         if bi:
             str_len = len(title)
             for inf in bi:
@@ -42,8 +49,8 @@ class book_util:
                     res_sub_title = inf.sub_title
 
             return (res_genrue_id, res_title, res_sub_title, 'Edit')
-        sql = f"SELECT * FROM BOOK_INFO WHERE '{ title }' LIKE '%' || TITLE || '%' || SUB_TITLE || '%' AND ({genrue_id} = 0 OR GENRUE_ID = {genrue_id}) "
-        bi = Info.objects.raw(sql)
+        sql = "SELECT * FROM BOOK_INFO WHERE '%%%s%%' LIKE '%%' || TITLE || '%%' || SUB_TITLE || '%%' AND (%s = 0 OR GENRUE_ID = %s) " % (title, genrue_id, genrue_id)
+        bi = si.rawObjects(sql)
         if bi:
             str_len = len(title)
             res_genrue_id=1
@@ -62,15 +69,17 @@ class book_util:
         return genrue_id, title , '', 'None'
 
     def get_author(str):
-        sql = f"SELECT * FROM BOOK_AUTHOR WHERE '{ str }' LIKE '%' || AUTHOR_NAME || '%' AND AUTHOR_NAME <> '' "
-        authors = Author.objects.raw(sql)
+        str = str.replace('\'','''''')
+        sql = "SELECT * FROM BOOK_AUTHOR WHERE '%%%s%%' LIKE '%%' || AUTHOR_NAME || '%%' AND AUTHOR_NAME <> '' " % (str)
+        authors = sa.rawObjects(sql)
         if authors:
             return authors[0].author_name
         else:
             return utils.getRegex(str, appconst.REGEX_AUTHOR_NONE_BRACKETS)
 
     def get_author_id(genrue_id, author_name):
-        authors = Author.objects.filter(author_name=author_name, genrue_id=genrue_id)
+        filter = Q(author_name=author_name)
+        authors = sa.searchAuthor(filter)
         if authors:
             return authors.first().author_id
         else:
@@ -110,11 +119,13 @@ class book_util:
         return save_path
     
     def get_book_id(genrue_id, story_by, art_by, title, sub_title):
-        bi = Info.objects.filter(genrue = genrue_id
-                                 , story_by__author_name = story_by
-                                 , art_by__author_name = art_by
-                                 , title = title
-                                 , sub_title = sub_title).first()
+        filter = Q(genrue = genrue_id
+                , story_by__author_name = story_by
+                , art_by__author_name = art_by
+                , title = title
+                , sub_title = sub_title)
+        bi = si.searchInfo(filter).first()
+        
         if not bi:
             return 0
         return bi.book_id

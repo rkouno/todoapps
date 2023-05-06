@@ -31,7 +31,6 @@ class BookForm(forms.ModelForm):
     class Meta:
         model = Book
         fields = ('genrue_name','story_by','art_by','title','sub_title','volume',)
-        # fields = '__all__'
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

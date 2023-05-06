@@ -2,12 +2,13 @@
 from django.shortcuts import get_object_or_404
 from concurrent.futures import ThreadPoolExecutor
 from django.db.models import Q
-from django.db import transaction
 
 # service
-from apps.commons.services import service_bookInfo as sb
-from apps.commons.services import service_series as ss
-from apps.commons.services import service_author as sa
+from apps.commons.services import service_bookInfo as si
+from apps.commons.services import service_series   as ss
+from apps.commons.services import service_author   as sa
+from apps.commons.services import service_genrue   as sg
+from apps.commons.services import service_book     as sb
 
 # common
 from apps.commons.util import utils
@@ -16,12 +17,6 @@ from apps.commons.const import appconst
 
 # db
 from apps.book.models import Workbook
-from apps.book.models import Book
-from apps.book.models import Info
-from apps.book.models import Author
-from apps.book.models import Genrue
-from apps.book.models import Status
-from apps.book.models import Series
 
 """
 Book
@@ -77,6 +72,7 @@ def getLatestList():
 def settting():
     workbooks = Workbook.objects.all()
     for item in workbooks:
+        print(item.name)
         name = item.name
         extention = utils.getExtention(item.path)
         if not extention:
@@ -95,9 +91,9 @@ def settting():
         story_by = book_util.get_author(name)
         name = name.replace(story_by, '')
 
-        art_by = book_util.get_author(name)
+        art_by = book_util.get_author(name).replace('×', '')
         name = name.replace(art_by, '')
-
+        
         volume = utils.getVolume(name, appconst.REGEX_VOLUME)
         
         book_name = book_util.get_book_name(genrue_name, story_by, art_by, title, sub_title, volume)
@@ -121,7 +117,7 @@ def settting():
 # 置換
 def replace(before, after, isRegex):
     if isRegex:
-        for wb in Workbook.objects.filter(name__icontains = before):
+        for wb in Workbook.objects.all():
             wb.name = utils.replace(wb.name, before, after)
             wb.save()
     else:
@@ -163,15 +159,15 @@ def thread_create(workbook):
     if workbook.process == 'Create':
         print(workbook.book_name)
         file_path=workbook.save_path.replace('\\','/')
-        bi = Info.objects.get(book_id=workbook.book_id)
-        Book.objects.update_or_create(
-            genrue    = Genrue.objects.get(pk=workbook.genrue_id),
-            book      = Info.objects.get(pk=workbook.book_id),
-            series    = bi.series,
-            book_name = workbook.book_name.strip(),
-            file_path = file_path,
-            volume    = workbook.volume,
+
+        sb.update_or_create(
+            workbook.genrue_id,
+            workbook.book_id,
+            workbook.book_name.strip(),
+            file_path,
+            workbook.volume,
         )
+
         if utils.isFile(path):
             utils.fileMove(path, workbook.save_path)        
         else:
@@ -186,18 +182,18 @@ def thread_create(workbook):
 
     workbook.delete()
 # 保存
-def commit(form, genrue_id, story_by,art_by, title, sub_title, volume):
+def update(form, genrue_id, story_by,art_by, title, sub_title, volume):
     workbook = form.save(commit=False)
 
     extention = utils.getExtention(workbook.path)
     if not extention:
         extention = '.pdf'
     
-    genrue       = Genrue.objects.get(pk=genrue_id)
+    genrue       = sg.getObject(genrue_id)
     book_name    = book_util.get_book_name(genrue.genrue_name, story_by, art_by, title, sub_title, volume)
     save_path    = book_util.get_save_path(genrue.genrue_id)
-    author_story = sa.author_commit(genrue_id, story_by)
-    author_art   = sa.author_commit(genrue_id, art_by)
+    author_story = sa.commit(story_by)
+    author_art   = sa.commit(art_by)
 
     workbook.process     = "Create"
     workbook.genrue_id   = genrue.genrue_id
@@ -222,9 +218,9 @@ def commit(form, genrue_id, story_by,art_by, title, sub_title, volume):
     series = ss.series_commit(series_name)
 
     # 書籍情報登録
-    info   = sb.info_commit(
+    info   = si.info_commit(
         genrue.genrue_id, 
-        series.series_id, 
+        series.series_name, 
         author_story.author_id, 
         author_art.author_id, 
         title, 

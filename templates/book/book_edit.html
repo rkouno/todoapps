@@ -32,7 +32,7 @@
 <!-- #Error Message -->
 
 <div class="row">
-    <div class="col-sm-6">
+    <div class="row_col">
         <div class="card">
             <div class="card-body">
                 <!-- フォーム -->
@@ -58,6 +58,7 @@
                         {{ form.volume | add_class:'form-control' }}
                     </div>
                     <div class="text-center">
+                        <input type="hidden" name="submit_token" value="{{ request.session.submit_token }}" class="input_box">
                         <button type="submit" name="save" class="btn btn-primary">Save</button>
                         {% if 'library' in request.path %}
                         <button type="submit" name="delete" class="btn btn-secondary">Delete</button>
@@ -99,7 +100,7 @@
         </div>
     </div>
     <!-- 画像 -->
-    <div class="col-md-6">
+    <div class="row_col">
         <div class="card">
             <div class="card-body">
                 {% if pdf %}
@@ -108,7 +109,32 @@
                 </object>
                 {% endif%}
                 {% if images %}
-                <div id="images" class="row">
+                <a href="#" class="save btn btn-outline-dark" onclick="imageView(1)"><i class="bi bi-file-slides"></i></a>
+                <a href="#" class="save btn btn-outline-dark" onclick="imageView(2)"><i class="bi bi-grid-fill"></i></a>
+                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for image in images %}
+                        {% if image.id == 1 %}
+                        <div class="carousel-item active">
+                            <img src="{{ image.img_link }}" id="{{ image.id }}" name="{{ workbook.id }}" class="float-left img-fluid" onclick="delete_image({{image.id}},{{workbook.id}})">
+                        </div>
+                        {% else %}
+                        <div class="carousel-item">
+                            <img src="{{ image.img_link }}" id="{{ image.id }}" name="{{ workbook.id }}" class="float-left img-fluid" onclick="delete_image({{image.id}},{{workbook.id}})">
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                <div id="image_list" class="row" style="display: none;">
                     {% for image in images %}
                     <div class="col-sm-3 on_img">
                         <img src="{{ image.img_link }}" id="{{ image.id }}" name="{{ workbook.id }}" class="float-left img-fluid" onclick="delete_image({{image.id}},{{workbook.id}})">
@@ -137,7 +163,15 @@
         $('input[id=id_title]').val(Title);
         $('input[id=id_sub_title]').val(SubTitle);
     });
-
+    function imageView(id){
+        if(id == 1){
+            $('#carouselExampleControls').show();
+            $('#image_list').hide();
+        } else {
+            $('#carouselExampleControls').hide();
+            $('#image_list').show();
+        }
+    }
     $(function ($) {
         $('#id_genrue_name,#id_story_by,#id_art_by,#id_title,#sub_title').on('change', function () {
             var genrueID = $('select[name*=genrue_name]').val();

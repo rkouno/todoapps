@@ -109,28 +109,27 @@
                                 
                         <!-- ページ番号 -->
                         {% if workbooks %}
-                        {% if workbooks.has_previous %}
-                        {% if workbooks.previous_page_number != 1 %}
-                        <li><a class="page-link text-primary d-inline-block" href="?page=1">1</a></li>
-                        <li>…</li>
-                        {% endif %}
-                        <li><a class="page-link text-primary d-inline-block"
-                                href="?page={{ workbooks.previous_page_number }}">{{ workbooks.previous_page_number}}</a></li>
-                        {% endif %}
-                        <li class="disabled">
-                            <div class="page-link text-secondary d-inline-block disabled" href="#">{{ workbooks.number}}
-                            </div>
-                        </li>
-                        {% if workbooks.has_next %}
-                        <li><a class="page-link text-primary d-inline-block"
-                                href="?page={{ workbooks.next_page_number }}">{{workbooks.next_page_number }}</a></li>
+                            {% if workbooks.has_previous %}
+                                {% if workbooks.previous_page_number != 1 %}
+                                    <li><a class="page-link text-primary d-inline-block" href="?page=1">1</a></li>
+                                    <li>…</li>
+                                {% endif %}
+                                <li><a class="page-link text-primary d-inline-block"
+                                        href="?page={{ workbooks.previous_page_number }}">{{ workbooks.previous_page_number}}</a></li>
+                            {% endif %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">{{ workbooks.number}}
+                                </div>
+                            </li>
+                            {% if workbooks.has_next %}
+                                <li><a class="page-link text-primary d-inline-block"
+                                        href="?page={{ workbooks.next_page_number }}">{{workbooks.next_page_number }}</a></li>
                                 {% if workbooks.next_page_number != workbooks.paginator.num_pages %}
-                        <li>…</li>
-                        <li><a class="page-link text-primary d-inline-block"
-                                href="?page={{ workbooks.paginator.num_pages }}">{{workbooks.paginator.num_pages }}</a>
-                        </li>
-                        {% endif %}
-                        {% endif %}
+                                    <li>…</li>
+                                    <li><a class="page-link text-primary d-inline-block"
+                                            href="?page={{ workbooks.paginator.num_pages }}">{{workbooks.paginator.num_pages }}</a></li>
+                                {% endif %}
+                            {% endif %}
                         {% endif %}
                         <!-- #ページ番号 -->
 

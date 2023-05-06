@@ -1,7 +1,6 @@
 #utils
 import urllib.parse
 from django.shortcuts import get_object_or_404
-from django.utils import timezone
 
 #commons
 from apps.commons.const import appconst
@@ -14,35 +13,41 @@ from apps.anime.models import Anime
 from apps.anime.models import Video
 from apps.anime.models import Adult
 
+
 """
 一覧画面
 """
 # 一覧
 def retriveVideo(tag, sort_code):
-    order_colum='-dtRegist'
+    # ソート順
     if sort_code == 1:
         order_colum='group'
     elif sort_code == 2:
         order_colum='title'
+    else:
+        order_colum='-dtRegist'
 
     if appconst.VIDEO in tag:
         videos = Video.objects.filter(process__isnull=True).\
             values('group_id').\
-                annotate(last_episode=Min('episode'), 
-                        last_id=Min('id'), 
-                        dtRegist=Max('dtRegist'), 
-                        group_title=Max('group_id__title'), 
-                        year=Max('group_id__period_id__year'),
-                        season=Max('group_id__period_id__season'),
-                        period=Max('group_id__period_id__period'),
+                annotate(last_episode = Min('episode'), 
+                        last_id       = Min('id'), 
+                        dtRegist      = Max('dtRegist'), 
+                        group_title   = Max('group_id__title'), 
+                        year          = Max('group_id__period_id__year'),
+                        season        = Max('group_id__period_id__season'),
+                        period        = Max('group_id__period_id__period'),
                         ).\
-                    values('last_id',"group_title", "last_episode", "dtRegist", "year", "season").\
+                    values('last_id', 'group_title', 'last_episode', 'dtRegist', 'year', 'season').\
                         order_by('-year', '-period', order_colum)
     elif appconst.HENTAI in tag:
         videos = Adult.objects.filter(process__isnull=True).\
             values('group').\
-                annotate(last_episode=Min('episode'), last_id=Min('id'), dtRegist=Max('dtRegist'), group_title=Max('group')).\
-                    values('last_id',"group_title", "last_episode").\
+                annotate(last_episode = Min('episode'), 
+                        last_id       = Min('id'), 
+                        dtRegist      = Max('dtRegist'), 
+                        group_title   = Max('group')).\
+                    values('last_id', 'group_title', 'last_episode').\
                         order_by(order_colum)
     return videos
 # ビデオ登録
@@ -88,7 +93,7 @@ def registVideo(tag, folder_path, watched_path):
             else:
                 # 新規
                 title = utils.getFileName(file)
-                url = file.replace(appconst.FOLDER_MEDIA, appconst.URL)
+                url = file.replace(appconst.FOLDER_MEDIA, appconst.VIDEO_URL)
                 url = url.replace(title,urllib.parse.quote(title))
                 episode = utils.getRegex(file, '- \d\d').replace('-', '').strip()
                 if episode == '':

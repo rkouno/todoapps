@@ -9,7 +9,6 @@ from apps.commons.services.service_torrent import home as service
 def home_list(request):
     # 過去1週間
     dt = timezone.now() + timezone.timedelta(days=-7)
-    
     # 書籍ダウンロード
     bookTorrents = service.recentBookDownloads(dt)
     # アニメダウンロード

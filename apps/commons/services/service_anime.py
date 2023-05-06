@@ -95,11 +95,11 @@ class download:
             )
 
 class master:
-    def retriveAdultVideo():
+    def getAll():
         adults = Adult.objects.all()
         return adults
 
-    def getAdultObject(id):
+    def get(id):
         return get_object_or_404(Adult, pk=id)
 
     def commit(id, title, group):

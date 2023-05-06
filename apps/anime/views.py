@@ -1,17 +1,17 @@
-#utils
+# utils
 from django.http import FileResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
-#commons
+# commons
 from apps.commons.const import appconst
 
-#from
+# form
 from apps.anime.forms import AnimeForm
 
-#service
-from apps.commons.services.service_anime import download as sab
+# service
 from apps.commons.services import service_video as sv
+from apps.commons.services.service_anime import download as sab
 
 # Create your views here.
 """
@@ -35,7 +35,7 @@ def anime_list(request):
             return render(request, 'anime/anime_index.html', {'animes' : animes})
     except Exception as e:
         print(e)
-    
+
     return render(request, 'anime/anime_index.html')
 # 新規作成
 def anime_new(request):
@@ -44,13 +44,12 @@ def anime_new(request):
         if form.is_valid():
             sab.commit(
                 form,
-                title = request.POST['title'], 
+                title   = request.POST['title'], 
                 keyword = request.POST['keyword'],
-                id = request.POST['period']
+                id      = request.POST['period']
             )
     else:
         sab.CreatePeriod()
-  
     form = AnimeForm()
     return render(request, 'anime/anime_edit.html', {'form': form})
 # 編集
@@ -76,12 +75,12 @@ def anime_edit(request, pk):
 """
 ビデオ
 """
-# 一覧
+# 一覧(一般)
 def video_index(request, sort_code):
     request.session['sort_code'] = sort_code
     videos = sv.retriveVideo(appconst.VIDEO, sort_code)
     return render(request, 'video/video_index.html', { 'videos' : videos, 'sort_code' : sort_code})
-# 一覧
+# 一覧(エロアニメ)
 def hentai_index(request, sort_code):
     request.session['sort_code'] = sort_code
     videos = sv.retriveVideo(appconst.HENTAI, sort_code)
@@ -101,7 +100,6 @@ def video_delete(request, id, tag):
 # 視聴画面・ボタン操作
 def video_watch(request, id, tag):
     sort_code=request.session['sort_code']
-
     if "delete" in request.GET:
         sv.updateProcess(tag, id, 'delete')
         video = sv.nextWatch(tag, id)

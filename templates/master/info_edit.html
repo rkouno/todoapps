@@ -1,0 +1,20 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Edit boook Infomation</h5>
+
+        <form method="POST" class="post-form">
+            {% csrf_token %}
+            <p>
+                {{ form }}
+            </p>
+            <div>
+                <button type="submit" name="save" class="btn btn-primary">Save</button>
+                <button type="submit" name="delete" class="btn btn-secondary">Delete</button>
+                <a href="{% url 'info_list' %}" class="btn btn-outline-dark">back</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

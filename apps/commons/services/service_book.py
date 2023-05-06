@@ -1,3 +1,6 @@
+# util
+from django.db.models import Max
+
 #common
 from apps.commons.const import appconst
 from apps.commons.util import utils
@@ -8,21 +11,19 @@ from apps.commons.services import service_series   as ss
 from apps.commons.services import service_bookInfo as si
 from apps.commons.services import service_book     as sb
 from apps.commons.services import service_author   as sa
+from apps.commons.services import service_genrue   as sg
 
 #model
 from apps.book.models import Book 
-from apps.book.models import Genrue
-from apps.book.models import Info
-from apps.book.models import Series
 
 """
 編集
 """
 # シリーズの取得
-def retriveSeries(sereis_id, genrue_id):
-    books = Book.objects.filter(series=sereis_id, genrue_id=genrue_id).\
+def retriveSeries(series_name, genrue_id):
+    books = Book.objects.prefetch_related('book').filter(book_id__series_id=series_name,genrue_id=genrue_id).\
         extra({'volume': "CAST(volume as INTEGER)"}).\
-            order_by('read_flg', 'book__sub_title', '-volume')
+            order_by('read_flg', 'book__title', 'book__sub_title', '-volume')
     return books
 # 書籍の取得
 def retriveBook(pk):
@@ -36,15 +37,15 @@ def updateReadFlg(book):
 # 書籍情報の更新
 def book_update(genrue_id, book_id, series_id, book_name, file_path, volume):
     book, updated= Book.objects.update_or_create(
-        genrue    = Genrue.objects.get(pk=genrue_id),
-        book      = Info.objects.get(pk=book_id),
-        series    = Series.objects.get(pk=series_id),
+        genrue    = sg.getObject(genrue_id),
+        book      = si.get(book_id),
+        # series    = ss.getObject(series_id),
         book_name = book_name,
         file_path = file_path,
         volume    = volume,
     )
 # コミット
-def commit(book, genrue_id, story_by, art_by, title, sub_title, volume):
+def update(book, genrue_id, story_by, art_by, title, sub_title, volume):
     # 拡張子の取得
     extention = utils.getExtention(book.file_path)
     # シリーズの取得
@@ -54,20 +55,20 @@ def commit(book, genrue_id, story_by, art_by, title, sub_title, volume):
         search = title
     series = ss.series_commit(search)
     # 作者の取得
-    story_by = sa.author_commit(genrue_id, story_by)
+    story_by = sa.commit(story_by)
     # 作画の取得
-    art_by = sa.author_commit(genrue_id, art_by)
+    art_by = sa.commit(art_by)
     # 書籍情報の取得
     info = si.info_commit(
         genrue_id, 
-        series.series_id, 
+        series.series_name.strip(), 
         story_by.author_id, 
         art_by.author_id, 
-        title, 
-        sub_title
+        title.strip(), 
+        sub_title.strip()
     )
     # ジャンル名の取得
-    genrue_name = Genrue.objects.get(pk=genrue_id).genrue_name
+    genrue_name = sg.getObject(genrue_id).genrue_name
     # 書籍名の取得
     book_name    = book_util.get_book_name(
         genrue_name, 
@@ -83,15 +84,15 @@ def commit(book, genrue_id, story_by, art_by, title, sub_title, volume):
     sb.book_update(
         genrue_id, 
         info.book_id, 
-        series.series_id, 
-        book_name, 
-        file_path, 
+        series.series_name.strip(), 
+        book_name.strip(), 
+        file_path.strip(), 
         volume
     )
     # 移動&リネーム
     utils.fileMove(book.file_path, file_path)
-    # 古い書籍情報の削除
-    book.delete()
+    # # 古い書籍情報の削除
+    # book.delete()
 def delete(pk):
     book = retriveBook(pk)
     utils.fileDelete(book.file_path)
@@ -100,28 +101,48 @@ def delete(pk):
 要修正一覧
 """
 def reviceList():
+    arrange()
+
     # 全書籍の取得
     files = utils.getFiles(appconst.FOLDER_ROOT_BOOK, appconst.EXTENTION_BOOK)
     # 存在しない書籍の整理
     for book in Book.objects.all():
         if not utils.existFile(book.file_path):
+            print(f'【削除】{book.file_path}')
             book.delete()
             book.save()
-            print(f'【削除】{book.file_path}')
         else:
             try:
                 # 存在する要素は削除
                 files.remove(book.file_path)
             except Exception as e:
-                print(book.file_path)
                 print(f'【存在しない】{book.file_path}')
     for file in files:
         utils.fileMove(file, appconst.FOLDER_TORRENT)
     return files
+# 整理
+def arrange():
+    series_all = ss.getAll()
+    series = series_all.values('series_name')
+    info   = si.getAll().annotate(series_name=Max('series')).values('series_name')
+    for s in series.difference(info):
+        # 存在しないシリーズの削除
+        print(f"【削除】{s['series_name']}")
+        ss.master.delete(s['series_name'])
 """
 共通
 """
 # ジャンルID取得
-def getGenrue(series_id):
-    book = Book.objects.filter(series_id=series_id).first()
-    return book.genrue.genrue_id
+def getGenrue(book_id):
+    book = Book.objects.filter(book_id=book_id).first()
+    return book.genrue_id
+
+def update_or_create(genrue_id, book_id, book_name, file_path, volume):
+    bi = si.get(book_id)
+    Book.objects.update_or_create(
+        genrue    = sg.getObject(genrue_id),
+        book      = bi,
+        book_name = book_name.strip(),
+        file_path = file_path.strip(),
+        volume    = volume,
+    )

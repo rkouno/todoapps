@@ -1283,3 +1283,20 @@ h6 {
   bottom: 0;           /* 基準からみて下寄せ */
   background: rgba(0,0,0,0.5);  /* 半透明の背景。 */
 }
+/*--------------------------------------------------------------
+# PC/タブレット
+--------------------------------------------------------------*/
+/* タブレット */
+@media only screen and (min-width:479px) and (max-width:1399px) {
+  .row_col {
+    flex: 0 0 auto;
+    width: auto;
+  }
+}
+/* PC */
+@media only screen and (min-width: 1400px) {
+  .row_col {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}

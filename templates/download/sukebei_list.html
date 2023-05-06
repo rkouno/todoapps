@@ -1,0 +1,21 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'sukebei_webscrap' %}" class="btn btn-success">Web scraping</a>
+            </div>
+            <h2 class="card-title">Sukebei last book list</h2>
+            {% for torrent in torrents %}
+            <div class="col-sm-3 on_img">
+                <a href="{% url 'sukebei_download' pk=torrent.torrent_link %}">
+                    <img src="{{ torrent.img_link }}" alt="{{ torrent.title }}">
+                    <p>{{ torrent.title }}</p>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

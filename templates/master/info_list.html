@@ -1,0 +1,111 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <!-- 検索 -->
+        <div class="row">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-sm-5"><input type="text" name="txtSearch" value="{{ request.session.txtSearch }}" class="form-control" /></div>
+                    <div class="col-sm-2"><button type="submit" name="search" class="btn btn-success">search</button></div>
+                </div>
+            </form>
+        </div>
+        <!-- #検索 -->
+        <!-- タブヘッダー -->
+        <ul class="nav nav-tabs nav-tabs-bordered" id="borderedTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="comic-tab" data-bs-toggle="tab" data-bs-target="#bordered-comic"
+                    type="button" role="tab" aria-controls="comic" aria-selected="true">Comic</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="novel-tab" data-bs-toggle="tab" data-bs-target="#bordered-novel"
+                    type="button" role="tab" aria-controls="novel" aria-selected="false">Novel</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="adult-tab" data-bs-toggle="tab" data-bs-target="#bordered-adult"
+                    type="button" role="tab" aria-controls="adult" aria-selected="false">Hentai</button>
+            </li>
+        </ul>
+        <!-- #タブヘッダー -->
+        <div class="tab-content pt-2" id="borderedTabContent">
+            <div class="tab-pane fade show active" id="bordered-comic" role="tabpanel" aria-labelledby="comic-tab">
+                <!-- 一般コミック -->
+                <table class="table table-sm table-striped table-hober table-condensed table-sm">
+                    <thread class="sticke-top table-dark" style="z-index:1">
+                        <tr>
+                            <th>series</th>
+                            <th>title</th>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        {% for model in comics %}
+                        <tr>
+                            <td><a href="{% url 'info_edit' model.book_id %}" >{{ model.series.series_name }}</a></td>
+                            <td>{{ model.title }} {{ model.sub_title }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- #一般コミック -->
+            </div>
+            <div class="tab-pane fade" id="bordered-novel" role="tabpanel" aria-labelledby="novel-tab">
+                <!-- 一般小説 -->
+                <table class="table table-sm table-striped table-hober table-condensed table-sm">
+                    <thread class="sticke-top table-dark" style="z-index:1">
+                        <tr>
+                            <th>series</th>
+                            <th>title</th>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        {% for model in novels %}
+                        <tr>
+                            <td><a href="{% url 'info_edit' model.book_id %}" >{{ model.series.series_name }}</a></td>
+                            <td>{{ model.title }} {{ model.sub_title }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- #一般小説 -->
+            </div>
+            <div class="tab-pane fade" id="bordered-adult" role="tabpanel" aria-labelledby="adult-tab">
+                <!-- 成年コミック・小説 -->
+                <table class="table table-sm table-striped table-hober table-condensed table-sm">
+                    <thread class="sticke-top table-dark" style="z-index:1">
+                        <tr>
+                            <th>series</th>
+                            <th>title</th>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        {% for model in adults %}
+                        <tr>
+                            <td><a href="{% url 'info_edit' model.book_id %}" >{{ model.series.series_name }}</a></td>
+                            <td>{{ model.title }} {{ model.sub_title }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- #成年コミック・小説 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var author=''
+        $('table tbody tr').each(function(i,element){
+            if($(element).find('a').length > 0){
+                if(author ==  $(element).find('a')[1].innerText){
+                    $(element).css('background-color', '#A4C6FF')
+                } else {
+                    author=$(element).find('a')[1].innerText;
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
