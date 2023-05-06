@@ -11,3 +11,4 @@ db.sqlite3
 *.csr
 *.key
 san.txt
+/template/NiceAdmin
