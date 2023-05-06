@@ -1,20 +1,68 @@
 {% extends 'common/base.html' %}
 
 {% block content %}
-<!-- 一覧 -->
-<form method="POST">
-  <a href="/anime" >Anime</a>
-  <a href="/book" >Book</a>
-  <a href="{% url 'shutdown' %}" class="btn btn-secondary">shutdown</a>
-  <a href="{% url 'sleep' %}" class="btn btn-warning">sleep</a>
-</form>
+<section class="secion">
 
-<!-- トースト -->
-<script src="https://riversun.github.io/jsframe/jsframe.js"></script>
-<script>
-    const jsFrame = new JSFrame();
-    jsFrame.showToast({
-        html: 'This is a simple toast', align: 'top', duration: 2000
-    });
-</script>
+  <div class="row">
+    <div class="col-sm">
+      <div class="card">
+        <div class="card-body">
+          <form method="POST">
+            <a href="{% url 'shutdown' %}" class="btn btn-secondary">shutdown</a>
+            <a href="{% url 'sleep' %}" class="btn btn-warning">sleep</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Anime downloaded list -->
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-sm table-striped">
+            <thead class="">
+              <tr>
+                <th>anime lastest downloaded title</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for anime in animeTorrents %}
+              <tr>
+                <td>{{ anime.title }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- End Anime downloaded list -->
+
+    <!-- Book downloade list -->
+    <div class="col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-sm table-striped">
+            <thead class="">
+              <tr>
+                <th>book latest downloaded title</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for book in bookTorrents %}
+              <tr>
+                <td>{{ book.title }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- End Book downloade list -->
+
+  </div>
+</section>
 {% endblock %}

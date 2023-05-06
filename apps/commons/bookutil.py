@@ -1,8 +1,5 @@
-from ctypes import util
 from apps.commons.util import utils
-from apps.book.models import book
-from apps.book.models import info
-from apps.book.models import author
+from apps.book.models import Info,Author
 from apps.commons.const import appconst
 import img2pdf 
 import os
@@ -34,7 +31,7 @@ class book_util:
     def get_title(genrue_id, title):
         print(title)
         sql = f"SELECT * FROM BOOK_INFO WHERE '{title}' LIKE '%' || TITLE || '%' || SUB_TITLE || '%' AND ({genrue_id} = 0 OR GENRUE_ID = {genrue_id}) AND SUB_TITLE <> '' "
-        bi = info.objects.raw(sql)
+        bi = Info.objects.raw(sql)
         if bi:
             str_len = len(title)
             for inf in bi:
@@ -46,11 +43,12 @@ class book_util:
 
             return (res_genrue_id, res_title, res_sub_title, 'Edit')
         sql = f"SELECT * FROM BOOK_INFO WHERE '{ title }' LIKE '%' || TITLE || '%' || SUB_TITLE || '%' AND ({genrue_id} = 0 OR GENRUE_ID = {genrue_id}) "
-        bi = info.objects.raw(sql)
+        bi = Info.objects.raw(sql)
         if bi:
             str_len = len(title)
+            res_genrue_id=1
             for inf in bi:
-                if str_len > len(title.replace(inf.title,'').replace(inf.sub_title,'')):
+                if str_len >= len(title.replace(inf.title,'').replace(inf.sub_title,'')):
                     str_len = len(title.replace(inf.title,'').replace(inf.sub_title,''))
                     res_genrue_id = inf.genrue_id
                     res_title = inf.title
@@ -65,11 +63,18 @@ class book_util:
 
     def get_author(str):
         sql = f"SELECT * FROM BOOK_AUTHOR WHERE '{ str }' LIKE '%' || AUTHOR_NAME || '%' AND AUTHOR_NAME <> '' "
-        authors = author.objects.raw(sql)
+        authors = Author.objects.raw(sql)
         if authors:
             return authors[0].author_name
         else:
             return utils.getRegex(str, appconst.REGEX_AUTHOR_NONE_BRACKETS)
+
+    def get_author_id(genrue_id, author_name):
+        authors = Author.objects.filter(author_name=author_name, genrue_id=genrue_id)
+        if authors:
+            return authors.first().author_id
+        else:
+            return 0
 
     def get_book_name(genrue_name, story_by, art_by, title, sub_title, volume):
         
@@ -78,9 +83,8 @@ class book_util:
             author += f'×{art_by}'
         if sub_title:
             title = f'{title} {sub_title}'
-        if volume == 0:
-            episode = ''
-        elif volume == '0':
+
+        if volume == 0 or volume == '0' or volume == '':
             episode = ''
         else:
             episode = f'第{volume}巻'
@@ -106,7 +110,11 @@ class book_util:
         return save_path
     
     def get_book_id(genrue_id, story_by, art_by, title, sub_title):
-        bi = info.objects.filter(genrue_id = genrue_id, story_by = story_by, art_by = art_by, title = title, sub_title = sub_title).first()
+        bi = Info.objects.filter(genrue = genrue_id
+                                 , story_by__author_name = story_by
+                                 , art_by__author_name = art_by
+                                 , title = title
+                                 , sub_title = sub_title).first()
         if not bi:
             return 0
         return bi.book_id
@@ -122,7 +130,7 @@ class book_util:
             elif ".jpeg" == extention:
                 img_list.append(f'{img_path}/{file}')
         
-        img_list = sorted(img_list)
+        img_list = sorted(img_list, key=utils.natural_keys)
 
         with open(f'{pdf_path}', "wb") as f: 
             f.write(img2pdf.convert(img_list))

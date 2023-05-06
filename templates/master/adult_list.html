@@ -1,0 +1,29 @@
+{% extends 'common/base.html' %}
+{% block content %}
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <table class="table table-striped table-hober table-condensed table-sm">
+                <thread class="sticke-top table-dark" style="z-index:1">
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thread>
+                <tbody>
+                    {% for adult in adults %}
+                    <tr>
+                        <td>{{ adult.title }}</td>
+                        <td>{{ adult.group }}</td>
+                        <td><a href="{% url 'adult_edit' adult.id %}" class="btn btn-success">edit</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

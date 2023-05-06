@@ -1,0 +1,191 @@
+{% extends 'common/base.html' %}
+
+{% load static %}
+{% block content %}
+<section class="section">
+    <div class="row">
+        <!-- 一覧 -->
+        <div class="card">
+            <div class="card-body">
+                <!-- フォーム -->
+                <form method="POST">
+                    {% csrf_token%}
+                    <div class="accordion" id="accordionFlushExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="flush-headingOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                    Search Barnar
+                                </button>
+                            </h2>
+                            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                                <div class="accordion-body">
+                                    <!-- 取得・設定 -->
+                                    <div class="mb-3">
+                                        <button type="submit" name="getList" class="btn btn-outline-primary">get list</button>
+                                        <button type="submit" name="setting" class="btn btn-outline-success">setting</button>
+                                    </div>
+                                    <!-- #取得・設定 -->
+                                    <!-- 検索 -->
+                                    <div class="row mb-3">
+                                        <div class="col-sm-10"><input type="text" name="txtSearch" value="{{ request.session.txtSearch }}" class="form-control" /></div>
+                                        <div class="col-sm-2"><button type="submit" name="search" class="btn btn-success">search</button></div>
+                                    </div>
+                                    <!-- #検索 -->
+                                    <!-- 置換 -->
+                                    <div class="row mb-2">
+                                        <div class="col-sm-5">
+                                            <input type="text" name="txtReplace_b" class="form-control" />
+                                        </div>                        
+                                        <div class="col-sm-5">
+                                            <input type="text" name="txtReplace_a" class="form-control" />
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="submit" name="replace" class="btn-info btn">replace</button>
+                                        </div>                        
+                                        <div class="mb-2 col-sm-4">
+                                            <input class="form-check-input" type="checkbox" name="isRegex" id="isRegex">
+                                            <label class="form-check-label" for="isRegex">正規表現で置換</label>
+                                        </div>
+                                    </div>
+                                    <!-- #置換 -->
+                                    <!-- 実行 -->
+                                    <button type="submit" name="execute" class="btn btn-primary">execute</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- #フォーム -->
+                <table class="table table-sm table-striped table-hober">
+                    <thead>
+                        <th></th>
+                        <th>name</th>
+                        <th>book_name</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% for book in workbooks %}
+                            <tr>
+                                <td>
+                                    <div class="btn-group mo-3" role="group">
+                                        <a href="#" class="btn btn-sm text-nowrap btn-info"
+                                        onclick="setProcess({{ book.id }}, 'Create')">create</a>
+                                        <a href="#" class="btn btn-sm text-nowrap btn-light"
+                                        onclick="setProcess({{ book.id }}, 'Clear')">clear</a>
+                                        <a href="#" class="btn btn-sm text-nowrap btn-danger"
+                                        onclick="setProcess({{ book.id }}, 'Delete')">delete</a>
+                                    </div>
+                                </td>
+                                <td>{{ book.name }}</td>
+                                <td>{{ book.book_name }}</td>
+                                <td><a href="{% url 'workbook_edit' book.id %}"
+                                    class="btn btn-sm text-nowrap btn-success">edit</a></td>
+                                    <td><input type="hidden" name="Process" value="{{ book.process }}"></td>
+                                    <td><input type="hidden" name="ExistFlg" value="{{ book.exist_flg }}"></td>
+                                    <td><input type="hidden" id="{{ book.id }}"></td>
+                                </tr>
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- ページネーション -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <!-- 前のページ -->
+                            {% if workbooks %}
+                            {% if workbooks.has_previous %}
+                            <li><a class="page-link text-primary d-inline-block" href="?page={{ workbooks.previous_page_number }}"><<</a>
+                            </li>
+                            {% else %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#"><<</div></li>
+                                {% endif %}
+                                {% endif %}
+                                <!-- #前のページ -->
+                                
+                        <!-- ページ番号 -->
+                        {% if workbooks %}
+                        {% if workbooks.has_previous %}
+                        {% if workbooks.previous_page_number != 1 %}
+                        <li><a class="page-link text-primary d-inline-block" href="?page=1">1</a></li>
+                        <li>…</li>
+                        {% endif %}
+                        <li><a class="page-link text-primary d-inline-block"
+                                href="?page={{ workbooks.previous_page_number }}">{{ workbooks.previous_page_number}}</a></li>
+                        {% endif %}
+                        <li class="disabled">
+                            <div class="page-link text-secondary d-inline-block disabled" href="#">{{ workbooks.number}}
+                            </div>
+                        </li>
+                        {% if workbooks.has_next %}
+                        <li><a class="page-link text-primary d-inline-block"
+                                href="?page={{ workbooks.next_page_number }}">{{workbooks.next_page_number }}</a></li>
+                                {% if workbooks.next_page_number != workbooks.paginator.num_pages %}
+                        <li>…</li>
+                        <li><a class="page-link text-primary d-inline-block"
+                                href="?page={{ workbooks.paginator.num_pages }}">{{workbooks.paginator.num_pages }}</a>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                        {% endif %}
+                        <!-- #ページ番号 -->
+
+                        <!-- 次のページ -->
+                        {% if workbooks %}
+                        {% if workbooks.has_next %}
+                        <li><a class="page-link text-primary d-inline-block"
+                            href="?page={{ workbooks.next_page_number }}">>></a></li>
+                        {% else %}
+                        <li class="disabled">
+                            <div class="page-link text-secondary d-inline-block disabled" href="#">>></div>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                        <!-- #次のページ -->
+                    </ul>
+                </nav>
+                <!-- #ページネーション -->
+            </div>
+        </div>
+        <!-- #一覧 -->
+    </div>
+</section>
+
+<script src="{% static 'js/workbook.js' %}"></script>
+<script>
+    function setProcess(id, process) {
+        event.preventDefault();
+        $.ajax({
+            'url': '{% url "workbook_process" %}',
+            'type': 'POST',
+            'data': {
+                'id': id,
+                'process': process,
+            },
+            'dataType': 'json'
+        })
+            .done(function (response) {
+                if (process == 'Create') {
+                    $('[id=' + id + ']').closest('tr').css('background-color', '#A4C6FF');
+                }
+                if (process == 'Delete') {
+                    $('[id=' + id + ']').closest('tr').css('background-color', 'gray');
+                }
+                if (process == 'Clear') {
+                    $('[id=' + id + ']').closest('tr').css('background-color', '');
+                }
+            }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log('------XMLHttpRequest-----');
+                console.log(XMLHttpRequest);
+                console.log('-----textStatus-----');
+                console.log(textStatus);
+                console.log('-----errorThrown-----');
+                console.log(errorThrown);
+            });;
+    }
+</script>
+{% endblock %}

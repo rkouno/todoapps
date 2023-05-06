@@ -1,0 +1,28 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        The following files have been moved to the Torrent folder 
+    </div>
+</div>
+<div class="card">
+    <div class="card-body">
+        <!-- 一覧 -->
+        <thread class="sticke-top table-dark" style="z-index:1">
+            <table class="table table-striped table-hober table-condensed table-sm">
+                <tr>
+                    <th>book_name</th>
+                    <th></th>
+                </tr>
+            </thread>
+            <tbody>
+                {% for list in models %}
+                <tr>
+                    <td>{{ list }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

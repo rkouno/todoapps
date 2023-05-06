@@ -3,7 +3,7 @@ import os
 import re
 import shutil
 import urllib.parse
-
+import calendar
 import requests
 from bs4 import BeautifulSoup
 from genericpath import isdir, isfile
@@ -17,7 +17,8 @@ class utils:
         files = []
         for extentoin in extentions:
             files.extend(glob.glob(f'{glob.escape(path)}/**/*.{extentoin}', recursive=True))
-        return sorted(set(files))
+        replace_files = [s.replace('\\', '/') for s in files]
+        return sorted(set(replace_files))
 
     """
     所定フォルダ以下のフォルダを取得する
@@ -43,7 +44,7 @@ class utils:
         if os.path.isfile(file):
             file, ext = os.path.splitext(file)
             return ext
-        return ''
+        return '.pdf'
     """
     正規表現
     """
@@ -84,6 +85,12 @@ class utils:
     def decode(str):
         return urllib.parse.unquote(str)
     """
+    ファイルサイズ取得
+    """
+    def getsize(str):
+        return os.path.getsize(str)
+
+    """
     ファイルの存在チェック
     """
     def existFile(file):
@@ -91,14 +98,19 @@ class utils:
     """
     ファイル判定
     """
-    def isFolder(path):
-        return not os.path.isfile(path)
+    def isFile(path):
+        return os.path.isfile(path)
     """
     ファイル削除
     """
     def fileDelete(path):
         if os.path.isfile(path):
             os.remove(path)
+    """
+    フォルダの存在チェック
+    """
+    def isDir(path):
+        return os.path.isdir(path)
     """
     空フォルダ削除
     """
@@ -135,3 +147,22 @@ class utils:
                 after_file = after_dir_or_file
             # 上書きして移動
             shutil.move(before_file, after_file)
+    """
+    置換（正規表現）
+    """
+    def replace(txtReplace, txtReplace_b, txtReplace_a):
+        return re.sub(txtReplace_b, txtReplace_a, txtReplace)
+    
+    """
+    月末日の取得
+    """
+    def get_last_date(year, month):
+        return f"{year}-{month}-{calendar.monthrange(year, month)[1]}"
+
+    """
+    ソートキー
+    """
+    def atoi(text):
+        return int(text) if text.isdigit() else text
+    def natural_keys(text):
+        return [ utils.atoi(c) for c in re.split(r'(\d+)', text) ]

@@ -2,11 +2,6 @@ $(document).ready(function () {
 
 });
 
-const jsFrame = new JSFrame();
-jsFrame.showToast({
-    html: 'This is a simple toast test', align: 'top', duration: 2000
-});
-
 /**Ajaxおまじない処理 */
 function getCookie(name) {
     var cookieValue = null;

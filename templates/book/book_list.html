@@ -20,8 +20,8 @@
         {% endfor %}
         {% for book in books %}
         <tr>
-            <td><a href="{% url 'book_download' book.id %}">{{ book.book_name }}</a></td>
-            <td><a href="{% url 'book_edit' book.id %}" class="btn btn-success">edit</a></td>
+            <td><a href="{% url 'book_download' book.slug %}">{{ book.book_name }}</a></td>
+            <td><a href="{% url 'book_fix' book.slug %}" class="btn btn-success">edit</a></td>
             <td><input type="hidden" name="ReadFlg" value="{{ book.read_flg }}"></td>
         </tr>
         {% endfor %}

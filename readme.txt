@@ -6,7 +6,7 @@ pip install psycopg2
 pip install img2pdf
 
 --新規アプリ作成系--
-1 python manage.py startapp アプリケーション名
+1 python manage.py startapp apps.アプリケーション名
 2 urls.py作成
 3 config urls.pyにurl追加
 
@@ -16,6 +16,9 @@ pip install img2pdf
 --DB系--
 python manage.py makemigrations book
 python manage.py migrate book
+
+python manage.py makemigrations anime
+python manage.py migrate anime
 
 --Shell--
 python manage.py shell
@@ -52,3 +55,17 @@ git pull
 
 --IIS--
 %windir%\system32\inetsrv\appcmd unlock config -section:system.webServer/handlers
+
+
+--開発メモ--
+url.py:URLの引数
+str	
+    パスセパレータ '/'を除く、空でない文字列に一致します。 コンバータが式に含まれていない場合の既定値です。
+int	
+    ゼロまたは任意の正の整数に一致します。 intを返します。
+slug	
+    ASCII文字または数字、およびハイフンおよびアンダースコア文字で構成されるスラッグ文字列に一致します。 例えば、building-your-1st-django-siteのようにします。
+uuid	
+    フォーマットされたUUIDと一致します。 複数のURLが同じページにマッピングされないようにするには、ダッシュを含め、文字を小文字にする必要があります。 たとえば、075194d3-6885-417e-a8a8-6c931e272f00となります。 UUIDインスタンスを返します。
+path	
+    パスセパレータ '/'を含む、空でない文字列に一致します。 これにより、strのようなURLパスのセグメントではなく、完全なURLパスと照合することができます。

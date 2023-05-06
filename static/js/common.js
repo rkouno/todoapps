@@ -3,12 +3,7 @@ $(document).ready(function () {
         $('#sidebar').toggleClass('active');
     });
 
-    // トーストの初期化
-    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-    var toastList = toastElList.map(function (toastEl) {
-        return new bootstrap.Toast(toastEl)
-    });
-    toastList.forEach(toast => toast.show());
+    // });
 
     // 背景色変更 
     // ----------------------------
@@ -27,38 +22,35 @@ $(document).ready(function () {
 
     // 既存
     $('input[name*=ExistFlg]').each(function (i, item) {
-        if ($(item).val() == 'True') {
-            $(this).closest('tr').css('color', 'red');
+        console.log(item);
+        if ($(item).val() == 'True' || $(item).val() == 1) {
+            // $(item).parent().parent().css('color', '#ff0000')
+            $(item).closest('tr').css('font-weight', 'bold');
         }
     });
 
     // 既読
     $('input[name*=ReadFlg]').each(function (i, item) {
-        if ($(item).val() == 'True') {
+        if ($(item).val() == 'True' || $(item).val() == 1) {
             $(this).closest('tr').css('background-color', '#FFFFBB');
         }
     });
 
     // 削除対象
     $('input[name*=DeleteFlg]').each(function (i, item) {
-        if ($(item).val() == 'True') {
+        if ($(item).val() == 'True' || $(item).val() == 1) {
             $(this).closest('tr').css('background-color', 'gray');
         }
     });
 
     // 作成対象
     $('input[name*=CreateFlg]').each(function (i, item) {
-        if ($(item).val() == 'True') {
+        if ($(item).val() == 'True' || $(item).val() == 1) {
             $(this).closest('tr').css('background-color', '#A4C6FF');
         }
     });
 });
-document.querySelectorAll('.toast').forEach(toastNode => {
-    const toast = new bootstrap.Toast(toastNode, {
-        autohide: false
-    });
-    toast.show()
-});
+
 
 // csrf_tokenの取得に使う
 function getCookie(name) {

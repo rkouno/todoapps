@@ -1,28 +1,23 @@
 {% extends 'common/base.html' %}
 {% block content %}
-<p>
-    <a href="{% url 'adult_webscraping' %}" class="btn btn-success">Web scraping</a>
-</p>
-<p>
-    <div class="container">
+<div class="card">
+    <div class="card-body">
         <div class="row">
-            {% for torrent in torrents %}
-            <div class="col-sm-3 on_img">
-                <a href="{% url 'adult_download' pk=torrent.id %}">
-                    <img src="{{ torrent.img_link }}" alt="{{ torrent.title }}" class="float-left img-fluid">
-                    <p>{{ torrent.title }}</p>
-                </a>
-            </div>
-            {% endfor %}
+            <a href="{% url 'adult_webscraping' %}" class="btn btn-success">Web scraping</a>
         </div>
-    </div>
-</p>
 
-<script src="https://riversun.github.io/jsframe/jsframe.js"></script>
-<script>
-    const jsFrame = new JSFrame();
-    jsFrame.showToast({
-        html: 'This is a simple toast test', align: 'top', duration: 2000
-    });
-</script>
+        <h2 class="card-title">Sukebei last book list</h2>
+
+            <div class="row mt-2">
+                {% for torrent in torrents %}
+                <div class="col-sm-3 on_img">
+                    <a href="{% url 'adult_download' pk=torrent.id %}">
+                        <img src="{{ torrent.img_link }}" alt="{{ torrent.title }}">
+                        <p>{{ torrent.title }}</p>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+</div>
 {% endblock %}

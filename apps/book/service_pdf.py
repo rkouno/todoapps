@@ -1,12 +1,12 @@
 from re import sub
-
+import logging
 from django.utils import timezone
 
 from django.db.models import Q
 from django.db import transaction
 from django.db.models import Min
 
-from apps.book.models import Workbook, info, genrue, status, book, author
+from apps.book.models import Workbook, Info, Genrue, Status, Book, Author
 from apps.commons.const import appconst
 from apps.commons.util import utils
 from apps.commons.bookutil import book_util
@@ -19,10 +19,15 @@ def retriveWorkbooks():
 def searchWorkbooks(search):
     return Workbook.objects.filter(Q(title__icontains = search) | Q(sub_title__icontains = search)).order_by('-process','book_name', 'name')
 # 置換
-def replace(txtSearch, txtReplace_b, txtReplace_a):
-    for wb in Workbook.objects.filter(name__icontains = txtSearch, name__contains = txtReplace_b):
-        wb.name = wb.name.replace(txtReplace_b, txtReplace_a)
-        wb.save()
+def replace(txtSearch, txtReplace_b, txtReplace_a, isRegex):
+    if isRegex:
+        for wb in Workbook.objects.filter(name__icontains = txtSearch):
+            wb.name = utils.replace(wb.name, txtReplace_b, txtReplace_a)
+            wb.save()
+    else:
+        for wb in Workbook.objects.filter(name__icontains = txtSearch, name__contains = txtReplace_b):
+            wb.name = wb.name.replace(txtReplace_b, txtReplace_a)
+            wb.save()
 # 一覧取得
 def getList():
     # 空フォルダの削除
@@ -94,9 +99,9 @@ def setName():
         item.title = title.strip()
         item.sub_title = sub_title.strip()
         item.story_by = story_by.strip()
-        item.story_by_id = author.objects.filter(author_name=story_by.strip(), genrue_id=genrue_id).first().author_id
+        item.story_by_id = book_util.get_author_id(genrue_id, story_by.strip())
         item.art_by = art_by.strip()
-        item.art_by_id = author.objects.filter(author_name=art_by.strip(), genrue_id=genrue_id).first().author_id
+        item.art_by_id = book_util.get_author_id(genrue_id, art_by)
         item.volume = volume
         item.book_name = book_name.strip()
         item.save_path = save_path.strip()
@@ -114,10 +119,10 @@ def retriveWorkbook(pk):
     return Workbook.objects.get(pk=pk)
 
 def delete(id, path):
-    if utils.isFolder(path):
-        utils.folder_delete(path)
-    else:
+    if utils.isFile(path):
         utils.fileDelete(path)
+    else:
+        utils.folder_delete(path)
     Workbook.objects.filter(id=id).delete()
 
 # 保存
@@ -128,9 +133,9 @@ def commit(form, genrue_id,story_by,art_by ,title ,sub_title ,volume):
     if not extention:
         extention = '.pdf'
     
-    genrue_model = genrue.objects.get(pk=genrue_id)
+    genrue_model = Genrue.objects.get(pk=genrue_id)
     book_name = book_util.get_book_name(genrue_model.genrue_name, story_by, art_by, title, sub_title, volume)
-    status_model=status.objects.get(pk=1)
+    status_model=Status.objects.get(pk=1)
     save_path = book_util.get_save_path(genrue_model.genrue_id)
 
     author_story = author_commit(genrue_id, story_by)
@@ -147,17 +152,17 @@ def commit(form, genrue_id,story_by,art_by ,title ,sub_title ,volume):
     workbook.book_name = book_name.strip()
     workbook.save_path = save_path + book_name + extention
     workbook.exist_flg = utils.existFile(save_path + book_name + extention)
-    workbook.story_by_id = author.objects.filter(author_name=story_by.strip(), genrue_id=genrue_id).first().author_id
-    workbook.art_by_id = author.objects.filter(author_name=art_by.strip(), genrue_id=genrue_id).first().author_id
+    workbook.story_by_id = Author.objects.filter(author_name=story_by.strip(), genrue_id=genrue_id).first().author_id
+    workbook.art_by_id = Author.objects.filter(author_name=art_by.strip(), genrue_id=genrue_id).first().author_id
 
-    if info.objects.filter(
+    if Info.objects.filter(
         genrue_id = genrue_id,
-        story_by = story_by,
-        art_by = art_by,
-        title = title,
-        sub_title = sub_title,
+        story_by_id = author_story.author_id,
+        art_by_id = author_art.author_id,
+        title = title.strip(),
+        sub_title = sub_title.strip(),
     ).count() == 0:
-        info.objects.get_or_create(
+        Info.objects.get_or_create(
             genrue_id = genrue_model.genrue_id,
             story_by_id = author_story.author_id,
             story_by = author_story.author_name.strip(),
@@ -170,7 +175,8 @@ def commit(form, genrue_id,story_by,art_by ,title ,sub_title ,volume):
             confirm_date = timezone.now(),
         )
     
-    workbook.book_id = info.objects.filter(genrue_id = genrue_id
+    workbook.book_id = Info.objects.filter(
+        genrue_id = genrue_id
         , story_by_id = author_story.author_id
         , art_by_id = author_art.author_id
         , title = title.strip()
@@ -181,54 +187,67 @@ def commit(form, genrue_id,story_by,art_by ,title ,sub_title ,volume):
 
 @transaction.atomic
 def author_commit(genrue_id, author_name):
-    authors, created = author.objects.get_or_create(
+    authors, created = Author.objects.get_or_create(
         author_name = author_name.strip(),
         genrue_id = genrue_id
     )
     if created:
-        authors = author.objects.filter(genrue_id=genrue_id, author_name=author_name).first()
+        authors = Author.objects.filter(genrue_id=genrue_id, author_name=author_name).first()
     return authors
 
 # 作成
 def create():
     tpe = ThreadPoolExecutor(max_workers=10)
     for workbook in Workbook.objects.filter(Q(process='Create') | Q(process='Delete')) :
-        tpe.submit(thread_create(workbook))
+        try:
+            tpe.submit(thread_create(workbook))
+        except Exception as e:
+            print(e)
+            logging.info(e)
     tpe.shutdown()
 
 def thread_create(workbook):
-    path = workbook.path
+    path = workbook.path.replace('\\','/')
     if workbook.process == 'Create':
-        if utils.isFolder(path):
+        print(workbook.book_name)
+        file_path=workbook.save_path.replace('\\','/')
+        book = Book.objects.filter(file_path=file_path).first()
+        if not book:
+            bi = Info.objects.get(book_id=workbook.book_id)
+            Book.objects.update_or_create(
+                genrue_id = workbook.genrue_id,
+                genrue_name = workbook.genrue_name.strip(),
+                book_id = bi,
+                story_by = workbook.story_by,
+                story_by_id = workbook.story_by_id,
+                art_by_id = workbook.art_by_id,
+                art_by = workbook.art_by,
+                title = workbook.title,
+                sub_title = workbook.sub_title,
+                book_name = workbook.book_name.strip(),
+                file_path = file_path,
+                volume = workbook.volume,
+                read_flg = False,
+                regist_date = timezone.now(),
+            )
+        
+        if utils.isFile(path):
+            utils.fileMove(path, workbook.save_path)        
+        else:
             book_util.create_pdf(path, workbook.save_path)
             utils.folder_delete(path)
-        else:
-            utils.fileMove(path, workbook.save_path)        
 
-        book.objects.get_or_create(
-            genrue_id = workbook.genrue_id,
-            genrue_name = workbook.genrue_name.strip(),
-            book_id = workbook.book_id,
-            story_by = workbook.story_by,
-            story_by_id = workbook.story_by_id,
-            art_by_id = workbook.art_by_id,
-            art_by = workbook.art_by,
-            title = workbook.title,
-            sub_title = workbook.sub_title,
-            book_name = workbook.book_name.strip(),
-            file_path = workbook.save_path,
-            volume = workbook.volume,
-            read_flg = False,
-            regist_date = timezone.now(),
-        )
     elif workbook.process == 'Delete':
-        if utils.isFolder(path):
-            utils.folder_delete(path)
-        else:
+        if utils.isFile(path):
             utils.fileDelete(path)
+        else:
+            utils.folder_delete(path)
 
     workbook.delete()
 
 def next(id):
-    next = Workbook.objects.filter(id__gt=id).aggregate(Min('id'))
-    return next['id__min']
+    # next = Workbook.objects.filter(~Q(process='Create'),~Q(process='Delete'),id__gt=id).aggregate(Min('id'))
+    # return next['id__min']
+    name = Workbook.objects.get(pk=id).name
+    next = Workbook.objects.filter(~Q(process='Create'),~Q(process='Delete'),name__gt=name).order_by('name','volume').first().id
+    return next

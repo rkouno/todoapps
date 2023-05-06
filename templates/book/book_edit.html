@@ -1,84 +1,129 @@
 {% extends 'common/base.html' %}
+{% load widget_tweaks %}
 {% block content %}
 
-<h2>{{ workbook.name }}</h2>
+<!-- Page Title -->
+<div class="pagetitle">
+    <h1>{{ workbook.name }}</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/book/create/">Create</a></li>
+            <li class="breadcrumb-item active">Editor</li>
+        </ol>
+    </nav>
+</div>
+<!-- #Page Title -->
 
-<!-- タブパネル -->
-<ul class="nav nav-tabs" id="tabs" role="tablist">
-    <li class="nav-item" role="presentation">
-        <a class="nav-link active"
-           id="edit-tab"
-           data-bs-toggle="tab"
-           href="#edit"
-           role="tab"
-           aria-controls="edit"
-           aria-selected="true">Edit</a>
-    </li>
-    <li class="nav-item" role="presentation">
-        <a class="nav-link"
-           id="image-tab"
-           data-bs-toggle="tab"
-           href="#image"
-           role="tab"
-           aria-controls="image"
-           aria-selected="true">Image</a>
-    </li>
-</ul>
-<div class="tab-content">
-    <div class="tab-pane fade show active" id="edit" role="tabpanel" aria-labeledby="edit-tab">
-        <form method="POST" class="post-form">
-            {% csrf_token %}
-            {{ form.as_p }}
-        
-            <button type="submit" name="save" class="btn btn-primary">Save</button>
-            <button type="submit" name="delete" class="btn btn-secondary">Delete</button>
-            <button type="submit" name="next" class="btn btn-success">Next</button>
-            <a href="{% url 'create_list' %}" class="save btn btn-outline-dark">back</a>
-        </form>
-        <p>
-            <table id="BookList" class="table table-striped table-hober table-condensed table-sm">
-                <thread class="sticke-top table-dark" style="z-index:1">
-                    <tr>
-                        <th>story_by</th>
-                        <th>art_by</th>
-                        <th>title</th>
-                        <th>sub_title</th>
-                    </tr>
-                </thread>
-                <tbody id="booklistbody">
-                    {% for info in bookinfo %}
-                    <tr>
-                        <td>{{ info.story_by }}</td>
-                        <td>{{ info.art_by }}</td>
-                        <td>{{ info.title }}</td>
-                        <td>{{ info.sub_title }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </p>
-    </div>
-    <div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image-tab">
-        <div class="row">
-            {% for image in images %}
-            <div class="col-sm-3 on_img">
-                <img src="{{ image.img_link }}" class="float-left img-fluid">
+<!-- Error Message -->
+{% if messages %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                {% for message in messages %}
+                <div>{{ message }}</div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-        <div>
-            <iframe src="{{ pdf }}" width="100%" height="80%"></iframe>
         </div>
     </div>
+</div>
+{% endif %}
+<!-- #Error Message -->
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <!-- フォーム -->
+                <form method="POST" class="post-form row g-3">
+                    {% csrf_token %}
+                    <!-- {{ form.as_p }} -->
+                    <div class="col-md-12">
+                        {{ form.genrue_name | add_class:'form-select' }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.story_by | add_class:'form-control' }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.art_by | add_class:'form-control' }}
+                    </div>
+                    <div class="col-md-12">
+                        {{ form.title | add_class:'form-control' }}
+                    </div>
+                    <div class="col-md-12">
+                        {{ form.sub_title | add_class:'form-control' }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form.volume | add_class:'form-control' }}
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" name="save" class="btn btn-primary">Save</button>
+                        {% if 'library' in request.path %}
+                        <button type="submit" name="delete" class="btn btn-secondary">Delete</button>
+                        <button type="submit" name="next" class="btn btn-success">Next</button>
+                        <button type="submit" name="back" class="save btn btn-outline-dark">Back</button>
+                        {% else %}
+                        <a href="{% url 'workbook_delete' workbook.id %}" class="btn btn-secondary">Delete</a>
+                        <button type="submit" name="next" class="btn btn-success">Next</button>
+                        <a href="{% url 'workbook_create' %}" class="btn btn-outline-dark">Back</a>
+                        {% endif %}
+                    </div>
+                </form>
+                <!-- #フォーム -->
+                <!-- 書籍選択 -->
+                <p>
+                    <table id="BookList" class="table table-striped table-hober table-condensed table-sm">
+                        <thread class="sticke-top table-dark" style="z-index:1">
+                            <tr>
+                                <th>story_by</th>
+                                <th>art_by</th>
+                                <th>title</th>
+                                <th>sub_title</th>
+                            </tr>
+                        </thread>
+                        <tbody id="booklistbody">
+                            {% for info in bookinfo %}
+                            <tr>
+                                <td>{{ info.story_by__author_name }}</td>
+                                <td>{{ info.art_by__author_name }}</td>
+                                <td>{{ info.title }}</td>
+                                <td>{{ info.sub_title }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </p>
+                <!-- #書籍選択 -->
+            </div>
+        </div>
+    </div>
+    <!-- 画像 -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                {% if pdf %}
+                <object data="{{ pdf }}" type="application/pdf" width="100%" height="700px">
+                    <param name="initZoom" value="fitToPage" />
+                </object>
+                {% endif%}
+                {% if images %}
+                <div id="images" class="row">
+                    {% for image in images %}
+                    <div class="col-sm-3 on_img">
+                        <img src="{{ image.img_link }}" id="{{ image.id }}" name="{{ workbook.id }}" class="float-left img-fluid" onclick="delete_image({{image.id}},{{workbook.id}})">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- #画像 -->
 </div>
 
 <script src="https://riversun.github.io/jsframe/jsframe.js"></script>
 <script>
-    const jsFrame = new JSFrame();
-    jsFrame.showToast({
-        html: 'This is a simple toast test', align: 'top', duration: 2000
-    });
-
     // 行クリックの動作イベントの設定
     $('td').on('click', function () {
         var tr = $(this).closest('tr').children();
@@ -86,66 +131,104 @@
         var ArtBy = tr[1].innerText;
         var Title = tr[2].innerText
         var SubTitle = tr[3].innerText
-        
+
         $('input[id=id_story_by]').val(StoryBy);
         $('input[id=id_art_by]').val(ArtBy);
         $('input[id=id_title]').val(Title);
         $('input[id=id_sub_title]').val(SubTitle);
     });
 
-    $('#id_story_by,#id_art_by,#id_title,#sub_title').on('change', function(){
-        console.log('change');
+    $(function ($) {
+        $('#id_genrue_name,#id_story_by,#id_art_by,#id_title,#sub_title').on('change', function () {
+            var genrueID = $('select[name*=genrue_name]').val();
 
-        var genrueID = $('select[name*=genrue_name]').val();
-        var title = $('input[id*=title').val();
-        var subTitle = $('input[id*=sub_title').val();
-        
-        var csrf_token = getCookie("csrftoken");
-        /// タイトル一覧の取得
-        event.preventDefault();
-        $.ajax({
-            'url': '{% url "book_info" %}',
-            'type': 'POST',
-            'data': {
-                'genrueID': genrueID,
-                'title': title,
-                'subTitle': subTitle,
-            },
-            'dataType': 'json',
-            // 送信前にヘッダにcsrf_tokenを付与。
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
-                }
-            },
-        }).done(function (data) {
-            $('#booklistbody > tr').remove()
+            var title = $('input[id*=title').val();
+            var subTitle = $('input[id*=sub_title').val();
 
-            data.forEach(function (element) {
-                $('#booklistbody').append('<tr><td>'+element.story_by+'</td><td>'+element.art_by+'</td><td>'+element.title+'</td><td>'+element.sub_title+'</td></tr>');
+            var csrf_token = getCookie("csrftoken");
+            /// タイトル一覧の取得
+            event.preventDefault();
+            $.ajax({
+                'url': '{% url "book_info" %}',
+                'type': 'POST',
+                'data': {
+                    'genrueID': genrueID,
+                    'title': title,
+                    'subTitle': subTitle,
+                },
+                'dataType': 'json',
+                // 送信前にヘッダにcsrf_tokenを付与。
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    }
+                },
+            }).done(function (data) {
+                $('#booklistbody > tr').remove()
+
+                data.forEach(function (element) {
+                    $('#booklistbody').append('<tr><td>' + element.story_by__author_name + '</td><td>' + element.art_by__author_name + '</td><td>' + element.title + '</td><td>' + element.sub_title + '</td></tr>');
+                });
+                $('td').on('click', function () {
+                    var tr = $(this).closest('tr').children();
+                    var StoryBy = tr[0].innerText;
+                    var ArtBy = tr[1].innerText;
+                    var Title = tr[2].innerText
+                    var SubTitle = tr[3].innerText
+
+                    $('input[id=id_story_by]').val(StoryBy);
+                    $('input[id=id_art_by]').val(ArtBy);
+                    $('input[id=id_title]').val(Title);
+                    $('input[id=id_sub_title]').val(SubTitle);
+                });
+            }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log('------XMLHttpRequest-----');
+                console.log(XMLHttpRequest);
+                console.log('-----textStatus-----');
+                console.log(textStatus);
+                console.log('-----errorThrown-----');
+                console.log(errorThrown);
+                $('#MessageView').load('~/Views/Shared/Message');
             });
-            $('td').on('click', function () {
-                var tr = $(this).closest('tr').children();
-                var StoryBy = tr[0].innerText;
-                var ArtBy = tr[1].innerText;
-                var Title = tr[2].innerText
-                var SubTitle = tr[3].innerText
-                
-                $('input[id=id_story_by]').val(StoryBy);
-                $('input[id=id_art_by]').val(ArtBy);
-                $('input[id=id_title]').val(Title);
-                $('input[id=id_sub_title]').val(SubTitle);
-            });
-        }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
-            console.log('------XMLHttpRequest-----');
-            console.log(XMLHttpRequest);
-            console.log('-----textStatus-----');
-            console.log(textStatus);
-            console.log('-----errorThrown-----');
-            console.log(errorThrown);
-            $('#MessageView').load('~/Views/Shared/Message');
         });
-    });         
-           
-</script>        
+    });
+    function delete_image(image_id, workbook_id){
+        if(confirm('削除しますか？')){
+            var csrf_token = getCookie("csrftoken");
+            
+            $.ajax({
+                'url': '{% url "book_delimage" %}',
+                'type': 'POST',
+                'data': {
+                    'image_id': image_id,
+                },
+                'dataType': 'json',
+                // 送信前にヘッダにcsrf_tokenを付与。
+                beforeSend: function (xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                    }
+                },
+            }).done(function (data) {
+                $('#images').children().remove()
+                data.forEach(function(element){
+                    console.log(element.id)
+                    $('#images').append(
+                    '<div class="col-sm-3 on_img">' +
+                    '<img src="'+ element.img_link +'" id="' + element.id + '" name="'+ workbook_id +'" class="float-left img-fluid" onclick="delete_image(' + element.id + ',' + workbook_id +')">'
+                    + '</div>'
+                    );
+                });
+            }).fail(function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log('------XMLHttpRequest-----');
+                console.log(XMLHttpRequest);
+                console.log('-----textStatus-----');
+                console.log(textStatus);
+                console.log('-----errorThrown-----');
+                console.log(errorThrown);
+                $('#MessageView').load('~/Views/Shared/Message');
+            });
+        }
+    }
+</script>
 {% endblock %}

@@ -4,14 +4,17 @@ from . import views
 
 # 新規作成
 urlpatterns = [
-    path('', views.anime_list, name='index'),
+    # ダウンロード
+    path('', views.anime_list, name='anime_list'),
     path('new/', views.anime_new, name='anime_new'),
     path('edit/<int:pk>', views.anime_edit, name='anime_edit'),
-    path('video/', views.video_index, name='video_index'),
-    path('adultvideo/', views.adult_index, name='adult_index'),
-    path('list/', views.video_list, name='video_list'),
-    path('hentai/', views.hentai_list, name='hentai_list'),
-    path('watch/<int:id>/<tag>', views.video_watch, name='video_watch'),
-    path('download/<int:id>/<tag>', views.video_download, name='video_download'),
-    path('delete/<int:id>/<tag>', views.video_delete, name='video_delete'),
+    # 一覧
+    path('video/<int:sort_code>', views.video_index, name='video_index'),
+    path('video/regist/', views.video_list, name='video_list'),
+    path('hentai/<int:sort_code>', views.hentai_index, name='hentai_index'),
+    path('hentai/regist/', views.hentai_list, name='hentai_list'),
+    # 視聴
+    path('video/watch/<int:id>/<tag>', views.video_watch, name='video_watch'),
+    path('video/download/<int:id>/<tag>', views.video_download, name='video_download'),
+    path('video/delete/<int:id>/<tag>', views.video_delete, name='video_delete'),
 ]

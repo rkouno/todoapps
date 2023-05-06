@@ -10,11 +10,16 @@ class appconst:
     nyaa 
     """
     # nyaa book RSS
-    BOOK_URL = 'https://nyaa.si/?page=rss&c=3_3'
+    BOOK_URL = 'https://nyaa.si/?page=rss&q=%s&c=3_3&f=0'
     # nyaa anime RSS
     ANIME_URL = 'https://nyaa.si/?page=rss&q=%s&c=1_4&f=0'
     # nyaa sukebei RSS
     SUKEBEI_URL = 'https://sukebei.nyaa.si/?page=rss&c=1_4&f=0'
+    SUKEBEI_SEARCH_URL = 'https://sukebei.nyaa.si/?page=rss&q=%s&c=1_4&f=0'
+    # dwonload link
+    BOOK_DL_URL  = '.*https://nyaa.si/download/.*'
+    ADULT_DL_URL = '.*https://sukebei.nyaa.si/download/.*'
+
     """
     IIS プロトコル 
     """
@@ -26,11 +31,11 @@ class appconst:
     """
     ディレクトリ
     """
-    FOLDER_TORRENT = 'C:/Torrent/'
+    FOLDER_TORRENT  = 'C:/Torrent/'
     FOLDER_DOWNLOAD = 'D:/download/'
-    FOLDER_TODOAPPS = 'D:\\todoapps\\'
+    FOLDER_TODOAPPS = 'D:/todoapps/'
     FOLDER_BASE = BASE_DIR
-    FOLDER_STATIC= os.path.join(BASE_DIR, 'static/')
+    FOLDER_STATIC= os.path.join(BASE_DIR, 'static/').replace('\\', '/')
     FOLDER_MEDIA= os.path.join(FOLDER_STATIC, 'media/')
 
     FOLDER_ROOT_BOOK = os.path.join(FOLDER_STATIC, 'book/')
@@ -41,13 +46,11 @@ class appconst:
 
     FOLDER_MEDIA = os.path.join(FOLDER_STATIC, 'media/')
     FOLDER_ROOT_UNWATCH = os.path.join(FOLDER_MEDIA,'unwatch/')
+    FOLDER_UNWATCH_VIDEO = os.path.join(FOLDER_ROOT_UNWATCH,'video/')
+    FOLDER_UNWATCH_HENTAI = os.path.join(FOLDER_ROOT_UNWATCH,'hentai/')
     FOLDER_ROOT_WATCHED = os.path.join(FOLDER_MEDIA,'watched/')
-    FOLDER_ROOT_VIDEO = os.path.join(FOLDER_ROOT_WATCHED,'video/')
-    FOLDER_VIDEO_WATCHED = os.path.join(FOLDER_ROOT_VIDEO, '視聴済み/')
-    FOLDER_VIDEO_UNWATCHED = os.path.join(FOLDER_ROOT_VIDEO, '未視聴/')
-    FOLDER_ROOT_VIDEO_HENTAI = os.path.join(FOLDER_ROOT_WATCHED,'adult_video/')
-    FOLDER_VIDEO_WATCHED_HENTAI = os.path.join(FOLDER_ROOT_VIDEO_HENTAI, '視聴済み/')
-    FOLDER_VIDEO_UNWATCHED_HENTAI = os.path.join(FOLDER_ROOT_VIDEO_HENTAI, '未視聴/')
+    FOLDER_WATCHED_VIDEO = os.path.join(FOLDER_ROOT_WATCHED, 'video/')
+    FOLDER_WATCHED_HENTAI = os.path.join(FOLDER_ROOT_WATCHED, 'hentai/')
 
     """
     拡張子
@@ -76,3 +79,16 @@ class appconst:
     ADULT_NOVEL=4
     # 8MB ずつ読み込む
     chunksize = 8 * (1024 ** 2)
+
+    """
+    タグ
+    """
+    HENTAI='hentai'
+    VIDEO='video'
+
+    """
+    ソートコード
+    """
+    SORT_RECENT=0
+    SORT_TITLE=1
+    SHOW_ALL=2
