@@ -9,6 +9,7 @@ from apps.commons.util import utils
 #db
 from django.db.models import Min
 from django.db.models import Max
+from django.db.models.functions import Coalesce
 from apps.anime.models import Anime
 from apps.anime.models import Video
 from apps.anime.models import Adult
@@ -33,7 +34,7 @@ def retriveVideo(tag, sort_code):
                 annotate(last_episode = Min('episode'), 
                         last_id       = Min('id'), 
                         dtRegist      = Max('dtRegist'), 
-                        group_title   = Max('group_id__title'), 
+                        group_title   = Coalesce(Max('group_id__title'), Max('title')),
                         year          = Max('group_id__period_id__year'),
                         season        = Max('group_id__period_id__season'),
                         period        = Max('group_id__period_id__period'),

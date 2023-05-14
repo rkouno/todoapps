@@ -70,8 +70,8 @@
                             <td><a href="{% url 'book_series' model.maxslug %}">{{ model.series }}</a></td>
                             <td><input type="hidden" name="ReadFlg" value="{{ model.read_flg }}"></td>
                             <td>{{ model.maxStatus }}</td>
-                            <td>{{ model.dtConfirm }}</td>
-                            <td>{{ model.dtLast }}</td>
+                            <td>{{ model.dtConfirm | date:"y/m/d" }}</td>
+                            <td>{{ model.dtLast | date:"y/m/d H:i:s" }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -338,12 +338,14 @@
                     <thread class="sticke-top table-dark" style="z-index:1">
                         <tr>
                             <th>download</th>
+                            <th>confirm date</th>
                         </tr>
                     </thread>
                     <tbody>
                         {% for torrent in torrents %}
                         <tr>
                             <td><a href="{% url 'book_nyaa' torrent.torrent_link %}">{{ torrent.title }}</a></td>
+                            <td>{{ torrent.regist_date | date:"y/m/d" }}</td>
                         </tr>
                         {% endfor%}
                     </tbody>

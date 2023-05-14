@@ -14,7 +14,7 @@ class Period(models.Model):
     season      = models.CharField(max_length=2, verbose_name='季節')
 
 class Anime(models.Model):
-    title       = models.CharField(max_length = 255, verbose_name='Title')
+    title       = models.CharField(max_length = 255, blank=True, null=True, verbose_name='Title')
     keyword     = models.CharField(max_length = 255, blank=True, null=True, verbose_name='Search torrent word')
     isEnd       = models.BooleanField(null=True)
     period      = models.ForeignKey(Period, on_delete=models.CASCADE)

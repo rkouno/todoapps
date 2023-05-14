@@ -2,9 +2,11 @@
 from django.http import FileResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.contrib import messages
 
 # commons
 from apps.commons.const import appconst
+from apps.commons.const import template
 
 # form
 from apps.anime.forms import AnimeForm
@@ -32,46 +34,56 @@ def anime_list(request):
             else:
                 # 初期表示
                 animes = sab.retriveAnime(False)
-            return render(request, 'anime/anime_index.html', {'animes' : animes})
+            params = {'animes' : animes}
+            return render(request, template.ANIME_LIST, params)
     except Exception as e:
         print(e)
+        messages.error(request, e)
+    return render(request, template.ANIME_LIST)
 
-    return render(request, 'anime/anime_index.html')
 # 新規作成
 def anime_new(request):
-    if request.method == "POST":
-        form = AnimeForm(request.POST)
-        if form.is_valid():
-            sab.commit(
-                form,
-                title   = request.POST['title'], 
-                keyword = request.POST['keyword'],
-                id      = request.POST['period']
-            )
-    else:
-        sab.CreatePeriod()
-    form = AnimeForm()
-    return render(request, 'anime/anime_edit.html', {'form': form})
+    form = AnimeForm(request.POST)
+    try:
+        if request.method == "POST":
+            if form.is_valid():
+                sab.commit(
+                    form,
+                    title   = request.POST['title'], 
+                    keyword = request.POST['keyword'],
+                    id      = request.POST['period']
+                )
+                form = AnimeForm()
+        else:
+            sab.CreatePeriod()
+            form = AnimeForm()
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
+    return render(request, template.ANIME_EDIT, {'form': form})
 # 編集
 def anime_edit(request, pk):
-    anime = sv.getObjectAnime(pk)
-    if "delete" in request.POST:
-        anime.delete()
-    elif "save" in request.POST:
-        form = AnimeForm(request.POST, instance=anime)
-        if form.is_valid():
-            sab.commit(
-                form,
-                title = request.POST['title'], 
-                keyword = request.POST['keyword'],
-                id = request.POST['period']
-            )
-    else:
-        initial = dict(isEnd = anime.isEnd)
-        form = AnimeForm(instance=anime, initial=initial)
-        return render(request, 'anime/anime_edit.html', {'form': form}) 
+    try:
+        anime = sv.getObjectAnime(pk)
+        if "delete" in request.POST:
+            anime.delete()
+        elif "save" in request.POST:
+            form = AnimeForm(request.POST, instance=anime)
+            if form.is_valid():
+                sab.commit(
+                    form,
+                    title = request.POST['title'], 
+                    keyword = request.POST['keyword'],
+                    id = request.POST['period']
+                )
+        else:
+            initial = dict(isEnd = anime.isEnd)
+            form = AnimeForm(instance=anime, initial=initial)
+            return render(request, 'anime/anime_edit.html', {'form': form}) 
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
     return redirect('anime_list')
-
 """
 ビデオ
 """

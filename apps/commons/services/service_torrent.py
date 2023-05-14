@@ -124,7 +124,7 @@ def scraping(keyword, url, url2, series):
 
 # ダウンロードリスト
 def downloadList(series_id):
-    torrents = bt.objects.filter(series_id = series_id, downloaded=False).order_by('-regist_date')
+    torrents = bt.objects.filter(series_id = series_id, downloaded=False).order_by('-regist_date', 'title')
     return torrents
 """
 共通

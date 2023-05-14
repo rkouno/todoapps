@@ -29,33 +29,30 @@ class download:
 
     # ダウンロード
     def download():
-        try:
-            # Torrentのダウンロード
-            for anime in download.retriveAnime(False).exclude(keyword=''):
-                url = appconst.ANIME_URL % utils.encode(anime.keyword)
-                html = utils.WebScraping(url)
-                for item in re.split('<item>', str(html)):
-                    title = re.search('<title>.*</title>', item).group().replace('<title>', '').replace('</title>', '')
-                    link = re.search('.*https://nyaa.si/download/.*', item)
-                    if link:
-                        link = link.group().replace('<link/>', '')
-                        # torrentファイル名
-                        file_name = f'{title}.torrent'
-                        if Torrent.objects.filter(torrent_link = link).count() == 0:
-                            # ダウンロード
-                            request.urlretrieve(link, appconst.FOLDER_DOWNLOAD + file_name)
-                            # ダウンロード済み
-                            Torrent.objects.create(
-                                title = title,
-                                torrent_link = link,
-                            )
-                            # アニメを更新
-                            anime.dtUpdate = timezone.now()
-                            if "END" in title:
-                                anime.isEnd = True
-                            anime.save()
-        except Exception as e:
-            print(e)
+        # Torrentのダウンロード
+        for anime in download.retriveAnime(False).exclude(keyword=''):
+            url = appconst.ANIME_URL % utils.encode(anime.keyword)
+            html = utils.WebScraping(url)
+            for item in re.split('<item>', str(html)):
+                title = re.search('<title>.*</title>', item).group().replace('<title>', '').replace('</title>', '')
+                link = re.search('.*https://nyaa.si/download/.*', item)
+                if link:
+                    link = link.group().replace('<link/>', '')
+                    # torrentファイル名
+                    file_name = f'{title}.torrent'
+                    if Torrent.objects.filter(torrent_link = link).count() == 0:
+                        # ダウンロード
+                        request.urlretrieve(link, appconst.FOLDER_DOWNLOAD + file_name)
+                        # ダウンロード済み
+                        Torrent.objects.create(
+                            title = title,
+                            torrent_link = link,
+                        )
+                        # アニメを更新
+                        anime.dtUpdate = timezone.now()
+                        if "END" in title:
+                            anime.isEnd = True
+                        anime.save()
     """
     登録画面
     """
@@ -68,15 +65,14 @@ class download:
         # 4：秋　10~ 12
         start_month = 1 if period.period == 1 else 4 if period.period == 2 else 7 if period.period == 3 else 10
         end_month = 3 if period.period == 1 else 6 if period.period == 2 else 9 if period.period == 3 else 12
-        anime = form.save(commit=False) 
-        anime.title = title
-        anime.keyword = keyword
-        anime.dtStart = f"{period.year}-{str(start_month).zfill(2)}-01"
-        anime.dtEnd = utils.get_last_date(period.year, end_month)
-        anime.period = period
-        anime.save()
-        
-        return anime
+        Anime.objects.update_or_create(
+            title = title,
+            keyword = keyword,
+            dtStart = f"{period.year}-{str(start_month).zfill(2)}-01",
+            dtEnd = utils.get_last_date(period.year, end_month),
+            period = period
+        )
+
     # シーズン作成
     def CreatePeriod():
         dt = datetime.datetime.now()

@@ -1,5 +1,4 @@
 {% extends 'common/base.html' %}
-
 {% block content %}
 <!--Page Title & list-->
 <div class="pagetitle">
@@ -35,7 +34,7 @@
                 </div>
                 {% else %}
                 <div class="col">
-                    <a href="{% url 'video_list' %}" class="btn btn-info">Get video list</a>
+                    <a href="{% url 'video_list' %}" class="btn btn-info" onclick="spiners(this)">Get video list</a>
                 </div>
                 <div class="col">
                     <p class="d-flex justify-content-end">
@@ -96,3 +95,4 @@
     </div>
 </div>
 {% endblock %}
+{% load static %}

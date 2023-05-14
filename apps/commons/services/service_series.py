@@ -35,7 +35,7 @@ def retriveGeneral(text, sort):
         orderby=('series', 'maxslug')
     elif sort == 2:
         # 確認日
-        orderby=('-dtConfirm','series', 'maxslug')
+        orderby=('-maxStatus', 'dtConfirm', 'series', 'maxslug')
     search = Q(series_name__icontains = text) if text else Q()
     series = Series.objects.prefetch_related('info').filter((Q(info__genrue_id = 1) | Q(info__genrue_id = 2)), search).\
         annotate(series=Max('series_name'), 

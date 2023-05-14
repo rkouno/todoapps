@@ -4,7 +4,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col">
-                <a href="{% url 'sukebei_webscrap' %}" class="btn btn-success">Web scraping</a>
+                <a href="{% url 'sukebei_webscrap' %}" class="btn btn-success" onclick="spiners(this)">Web scraping</a>
             </div>
             <h2 class="card-title">Sukebei last book list</h2>
             {% for torrent in torrents %}
@@ -19,3 +19,4 @@
     </div>
 </div>
 {% endblock %}
+{% load static %}

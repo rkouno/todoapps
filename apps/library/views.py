@@ -122,7 +122,6 @@ def book_series_edit(request, slug):
     params={ 'form' : form }
     return render(request, 'master/series_edit.html', params)
 
-
 # 書籍ダウンロード
 def book_download(request, slug):
     try:
@@ -195,7 +194,7 @@ def book_edit(request, pk):
         pdf = utils.replace(book.file_path, appconst.FOLDER_TODOAPPS, appconst.MEDIA_URL)
         return render(request, 'book/book_edit.html', {'form' : form, 'workbook':book, 'bookinfo' : bi , 'images' : '', 'pdf': pdf})
     
-    return redirect('book_series', book.book.series_id)
+    return redirect('book_series', book.book.series.slug)
 
 """
 書籍要修正リスト

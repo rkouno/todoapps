@@ -22,12 +22,29 @@ from apps.book.models import Workbook
 Book
 """
 # 初期表示
-def retriveWorkbooks(text):
+def retriveWorkbooks(text, 
+                     nonecheck = None, 
+                     newcheck = None, 
+                     delcheck = None, 
+                     createcheck = None):
+    check = Q()
+    search = Q()
+
     if text:
-        search = Q(name__icontains = text)
-    else:
-        search = Q()
-    return Workbook.objects.filter(search).order_by('-process','book_name', 'name')
+        search.add(Q(name__icontains = text), Q.AND)
+
+    if nonecheck or newcheck or delcheck or createcheck:
+        if nonecheck:
+            check.add(Q(process = 'None'), Q.OR)
+        if newcheck:
+            check.add(Q(process = 'Edit'), Q.OR)
+        if delcheck:
+            check.add(Q(process = 'Delete'), Q.OR)
+        if createcheck:
+            check.add(Q(process = 'Create'), Q.OR)
+    search.add(check, Q.AND)
+
+    return Workbook.objects.filter(search).order_by('name', 'book_name')
 # workbook最新化
 def getLatestList():
     # 空フォルダの削除

@@ -1,34 +1,31 @@
 {% extends 'common/base.html' %}
-{% load static %}
 {% block content %}
 <section class="secion">
     <div class="card">
         <div class="card-body">
-            <div class="row">
-                <div class="col-12">
-                    <a href="{% url 'nyaa_webscrap' %}" class="btn btn-success">Web scraping</a>
-                </div>
-                <div class="col-12">
-                    <!-- Book downloade list -->
-                    <table class="table table-sm table-striped">
-                        <thread class="sticke-top table-dark">
-                            <tr>
-                                <th>book downloaded title</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for torrent in torrents %}
-                            <tr>
-                                <td><a href="{% url 'nyaa_download' pk=torrent.torrent_link %}">{{ torrent.title }}</a></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <!-- # Book downloade list -->
-                </div>
-            </div>
+            <p>
+                <a href="{% url 'nyaa_webscrap' %}" class="btn btn-success" onclick="spiners(this)">Web scraping</a>
+            </p>
+            <!-- Book downloade list -->
+            <table class="table table-sm table-striped">
+                <thread class="sticke-top table-dark">
+                    <tr>
+                        <th>book downloaded title</th>
+                        <th>regist date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for torrent in torrents %}
+                    <tr>
+                        <td><a href="{% url 'nyaa_download' pk=torrent.torrent_link %}">{{ torrent.title }}</a></td>
+                        <td>{{ torrent.regist_date|date:"y/m/d" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <!-- # Book downloade list -->
         </div>
     </div>
 </section>
-
+{% load static %}
 {% endblock %}

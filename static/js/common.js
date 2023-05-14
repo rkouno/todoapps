@@ -73,3 +73,10 @@ function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
+
+// 更新中の表示
+function spiners(element){
+    console.log(element)
+    $(element).append('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
+    return true
+}

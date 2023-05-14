@@ -2,6 +2,8 @@
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.contrib import messages
+import subprocess
 
 # common
 from django.core.paginator import Paginator
@@ -61,25 +63,38 @@ BOOK
 # 一覧画面
 # ------------
 def workbook_create(request):
-    if 'getList' in request.POST:
-        # 最新一覧取得
-        sw.getLatestList()
-        request.session.clear()
-    elif 'setting' in request.POST:
-        sw.settting()
-    elif 'replace' in request.POST:
-        sw.replace(request.POST['txtReplace_b'], request.POST['txtReplace_a'], request.POST.get('isRegex'))
-    elif 'search' in request.POST:
-        request.session['txtSearch']=request.POST['txtSearch']
-    elif 'execute' in request.POST:
-        sw.execute()
-    # 検索条件
-    search = request.session.get('txtSearch')
+    try:
+        if 'getList' in request.POST:
+            # 最新一覧取得
+            sw.getLatestList()
+            request.session.clear()
+            # subprocess.run(r"C:\Torrent\unzip.bat")
+        elif 'setting' in request.POST:
+            sw.settting()
+        elif 'replace' in request.POST:
+            sw.replace(request.POST['txtReplace_b'], request.POST['txtReplace_a'], request.POST.get('isRegex'))
+        elif 'search' in request.POST:
+            request.session['txtSearch']   = request.POST.get('txtSearch')
+            request.session['nonecheck']   = getKey(request, 'nonecheck')
+            request.session['newcheck']    = getKey(request, 'newcheck')
+            request.session['delcheck']    = getKey(request, 'delcheck')
+            request.session['createcheck'] = getKey(request, 'createcheck')
+        elif 'execute' in request.POST:
+            sw.execute()
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
+
     # 一覧取得
-    model = sw.retriveWorkbooks(search)
+    model = sw.retriveWorkbooks(getSession(request, 'txtSearch'),
+                                getSession(request, 'nonecheck'),
+                                getSession(request, 'newcheck'),
+                                getSession(request, 'delcheck'),
+                                getSession(request, 'createcheck'))
     # ページネーション
     model = pagenation(request, model)
     return render(request, 'book/book_create.html', {'workbooks' : model})
+
 # 処理変更
 def workbook_process(request):
     id      = request.POST['id']
@@ -170,3 +185,15 @@ def pagenation(request, model):
         page = request.GET.get('page', 1)
     models = paginator.get_page(page) # 指定のページのArticleを取得
     return models
+
+def getSession(request, key):
+    try:
+        return request.session[key]
+    except Exception as e:
+        return ''
+
+def getKey(request, key):
+    try:
+        return 'checked' if request.POST.get(key) else ''
+    except Exception as e:
+        return request.session[key]

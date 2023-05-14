@@ -99,7 +99,7 @@ class template:
     """
     Anime
     """
-    ANIME_INDEX = 'anime/anime_index.html'
+    ANIME_LIST = 'anime/anime_index.html'
     ANIME_EDIT  = 'anime/anime_edit.html'
     """
     BOOK

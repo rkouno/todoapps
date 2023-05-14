@@ -38,7 +38,7 @@ class AnimeForm(forms.ModelForm):
     isEnd = forms.fields.ChoiceField(
         choices  = (('0','放送中'),('1','放送終了')),
         required = True, 
-        label    = '状態',
+        label    = 'Status',
         initial  = 0, 
         widget   = forms.widgets.Select(attrs={'class':'form-select'})
     )
