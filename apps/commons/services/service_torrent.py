@@ -13,7 +13,6 @@ from apps.anime.models import Torrent as at
 from apps.book.models import Torrent as bt
 
 # service 
-from apps.commons.services import service_series as ss
 
 """
 home

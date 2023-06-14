@@ -89,17 +89,31 @@ def anime_edit(request, pk):
 """
 # 一覧(一般)
 def video_index(request, sort_code):
-    request.session['sort_code'] = sort_code
-    videos = sv.retriveVideo(appconst.VIDEO, sort_code)
+    try:
+        request.session['ip_address'] = appconst.IP_ADDRESS
+        request.session['sort_code'] = sort_code
+        videos = sv.retriveVideo(appconst.VIDEO, sort_code)
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
     return render(request, 'video/video_index.html', { 'videos' : videos, 'sort_code' : sort_code})
 # 一覧(エロアニメ)
 def hentai_index(request, sort_code):
-    request.session['sort_code'] = sort_code
-    videos = sv.retriveVideo(appconst.HENTAI, sort_code)
+    try:
+        request.session['sort_code'] = sort_code
+        videos = sv.retriveVideo(appconst.HENTAI, sort_code)
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
     return render(request, 'video/video_index.html', { 'videos' : videos, 'sort_code' : sort_code})
 # ダウンロード済みアニメを登録・整理
 def video_list(request):
-    sv.registVideo(appconst.VIDEO, appconst.FOLDER_UNWATCH_VIDEO, appconst.FOLDER_WATCHED_VIDEO)
+    try:
+        sv.moveVideo()
+        sv.registVideo(appconst.VIDEO, appconst.FOLDER_UNWATCH_VIDEO, appconst.FOLDER_WATCHED_VIDEO)
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
     return redirect('video_index', appconst.SORT_RECENT)
 # エロアニメを登録
 def hentai_list(request):
@@ -111,30 +125,38 @@ def video_delete(request, id, tag):
     return redirect('video_index', request.session['sort_code'])
 # 視聴画面・ボタン操作
 def video_watch(request, id, tag):
-    sort_code=request.session['sort_code']
-    if "delete" in request.GET:
-        sv.updateProcess(tag, id, 'delete')
-        video = sv.nextWatch(tag, id)
-        if video:
-            return redirect('video_watch', video.id, tag)
-    elif "next" in request.GET :
-        sv.updateProcess(tag, id, 'move')
-        video = sv.nextWatch(tag, id)
-        if video:
-            return redirect('video_watch', video.id, tag)
-    elif "watched" in request.GET:
-        sv.updateProcess(tag, id, 'move')
-    else:
-        video  = sv.watch(tag, id)
-        return render(request, 'video/video_watch.html', {appconst.VIDEO : video})
+    try:        
+        sort_code=request.session['sort_code']
+        if "delete" in request.GET:
+            sv.updateProcess(tag, id, 'delete')
+            video = sv.nextWatch(tag, id)
+            if video:
+                return redirect('video_watch', video.id, tag)
+        elif "next" in request.GET :
+            sv.updateProcess(tag, id, 'move')
+            video = sv.nextWatch(tag, id)
+            if video:
+                return redirect('video_watch', video.id, tag)
+        elif "watched" in request.GET:
+            sv.updateProcess(tag, id, 'move')
+        else:
+            video  = sv.watch(tag, id)
+            return render(request, 'video/video_watch.html', {appconst.VIDEO : video})
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
     # 一覧へ戻る
     return redirect(f'{tag}_index', sort_code)
 # 一覧/視聴画面・ダウンロード
 def video_download(request, id, tag):
-    if tag in appconst.VIDEO:
-        media = sv.getObjectVideo(id)
-    else:
-        media = sv.getObjectAdult(id)
-    sv.updateProcess(tag, id, 'move')
-    filename, filepath = media.title, media.path
-    return FileResponse(open(filepath, "rb"), as_attachment=True, filename=filename)
+    try:
+        if tag in appconst.VIDEO:
+            media = sv.getObjectVideo(id)
+        else:
+            media = sv.getObjectAdult(id)
+        sv.updateProcess(tag, id, 'move')
+        filename, filepath = media.title, media.path
+        return FileResponse(open(filepath, "rb"), as_attachment=True, filename=filename)
+    except Exception as e:
+        print(e)
+        messages.error(request, e)

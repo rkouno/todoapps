@@ -7,7 +7,12 @@ import calendar
 import requests
 from bs4 import BeautifulSoup
 from genericpath import isdir, isfile
+from pathlib import Path
+from subprocess import run, DEVNULL
 import uuid
+import subprocess
+
+from apps.commons.const import appconst
 
 class security:
     def set_submit_token(request):
@@ -47,6 +52,7 @@ class utils:
         for extention in extentions:
             for folder in glob.glob(f'{glob.escape(path)}/**/*.{extention}', recursive=True):
                 folders.append(os.path.dirname(folder))
+                continue
 
         return list(set(folders))
     """
@@ -166,6 +172,11 @@ class utils:
                 after_file = after_dir_or_file
             # 上書きして移動
             shutil.move(before_file, after_file)
+    # コピー
+    def fileCopy(src, dst):
+        if isfile(src):
+            dst = src.replace(appconst.FOLDER_TORRENT, dst)
+            shutil.copyfile(src, dst)
     """
     置換（正規表現）
     """
@@ -185,3 +196,27 @@ class utils:
         return int(text) if text.isdigit() else text
     def natural_keys(text):
         return [ utils.atoi(c) for c in re.split(r'(\d+)', text) ]
+    
+    """
+    圧縮ファイル解凍
+    """
+    def unzip(zip_file, out_dir):
+        print(zip_file)
+        # zip_file=zip_file.replace('/','\\')
+        # out_dir=out_dir.replace('/','\\')
+        args = {
+            appconst.EXE_7ZIP.replace('/','\\'), 
+            ' x ', # x:展開
+            # '-pXXXXXX', #パスワード 
+            f'-o{out_dir}*', 
+            f' "{zip_file}" ',
+        }
+        print(args)
+        subprocess.call(f'"{appconst.EXE_7ZIP}" x -o{out_dir}* "{zip_file}"',shell=True)
+        # subprocess.run(args=args)
+        return True
+    
+    def convertAvif(folder):
+        for file in utils.getFiles(folder, appconst.EXTENTION_AVIF):
+            fileName = utils.getFileName(file)
+            subprocess.call(f'"{appconst.AVIFDEC}" "{file}" "{folder}/{fileName}.png"',shell=True)

@@ -30,12 +30,14 @@ from wsgiref.util import FileWrapper
 def book_general(request, sort):
     # 検索条件設定
     if 'search' in request.POST:
-        request.session['txtSearch']=request.POST['txtSearch']
-    search = request.session.get('txtSearch')
+        request.session['cbxStatus'] = request.POST.get('cbxStatus')
+        request.session['txtSearch'] = request.POST['txtSearch']
+    cbxStatus = request.session.get('cbxStatus', 0)
+    search    = request.session.get('txtSearch', '')
     # ソートモード設定
     request.session['sort'] = sort
     # データ取得
-    model = ss.retriveGeneral(search, sort)
+    model = ss.retriveGeneral(search, sort, cbxStatus)
     # ページネーション設定
     models = pagenation(request, model)
     # パラメーター設定

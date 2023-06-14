@@ -14,7 +14,6 @@ from apps.anime.models import Anime
 from apps.anime.models import Video
 from apps.anime.models import Adult
 
-
 """
 一覧画面
 """
@@ -51,6 +50,16 @@ def retriveVideo(tag, sort_code):
                     values('last_id', 'group_title', 'last_episode').\
                         order_by(order_colum)
     return videos
+
+# 移動
+def moveVideo():
+    folder_path = appconst.FOLDER_TORRENT
+    videoFiles = utils.getFiles(folder_path, appconst.EXTENTION_VIDEO)
+    for file in videoFiles:
+        if utils.isFile(file):
+            utils.fileMove(file, appconst.FOLDER_UNWATCH_VIDEO)
+            # utils.fileDelete(file)
+
 # ビデオ登録
 def registVideo(tag, folder_path, watched_path):
     try:

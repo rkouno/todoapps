@@ -26,19 +26,20 @@ class appconst:
     """
     PROTCOL     = "http://"
     IP_ADDRESS  = socket.gethostbyname(socket.gethostname())
-    VIDEO_URL   = PROTCOL + IP_ADDRESS + '/Video/'
+    VIDEO_URL   = PROTCOL + 'localhost/Video/'
     TORRENT_URL = PROTCOL + IP_ADDRESS + '/Torrent/'
     MEDIA_URL   = PROTCOL + IP_ADDRESS + ':8080/'
 
     """
     ディレクトリ
     """
-    FOLDER_TORRENT  = 'C:/Torrent/'
+    FOLDER_TORRENT  = 'D:/Torrent/'
     FOLDER_DOWNLOAD = 'D:/download/'
     FOLDER_TODOAPPS = 'D:/todoapps/'
     FOLDER_BASE     = BASE_DIR
     FOLDER_STATIC   = os.path.join(BASE_DIR, 'static/').replace('\\', '/')
     FOLDER_MEDIA    = os.path.join(FOLDER_STATIC, 'media/')
+    FOLDER_BAT      = os.path.join(FOLDER_STATIC, 'bat/')
 
     FOLDER_ROOT_BOOK        = os.path.join(FOLDER_STATIC, 'book/')
     FOLDER_BOOK_ADULT       = os.path.join(FOLDER_ROOT_BOOK, 'adult/')
@@ -55,13 +56,19 @@ class appconst:
     FOLDER_WATCHED_HENTAI   = os.path.join(FOLDER_ROOT_WATCHED, 'hentai/')
 
     """
+    Bat
+    """
+    UNZIP_BAT = os.path.join(FOLDER_BAT, 'unzip_convert.bat')
+    MOVIE_BAT = os.path.join(FOLDER_BAT, 'move_movie.bat')
+
+    """
     拡張子
     """
     EXTENTION_IMAGE = ("png", "PNG", "jpeg", "jpg", "JPG")
     EXTENTION_BOOK  = ("pdf", "epub")
     EXTENTION_VIDEO = ("mp4", "mkv")
-    EXTENTION_ZIP   = ("zip", "rar")
-
+    EXTENTION_ZIP   = ("zip", "rar", "7z")
+    EXTENTION_AVIF  = ("avif",)
     """
     正規表現
     """
@@ -95,6 +102,11 @@ class appconst:
     SORT_TITLE  = 1
     SHOW_ALL    = 2
 
+    """
+    7-zip
+    """
+    EXE_7ZIP = 'C:/Program Files/7-Zip/7zG.exe'
+    AVIFDEC  = 'D:/Torrent/avifdec.exe'
 class template:
     """
     Anime

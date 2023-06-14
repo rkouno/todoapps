@@ -27,6 +27,7 @@ class AnimeForm(forms.ModelForm):
                     'class' : 'form-control'
                 }),
         }
+        
     # セレクトボックス（期）  
     period = CustomModelChoiceField(
         queryset = Period.objects.all().order_by('-year','-period'),

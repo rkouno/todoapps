@@ -26,7 +26,7 @@ def getObject(pk):
     return series
 
 # 一覧（一般コミック・一般小説）
-def retriveGeneral(text, sort):
+def retriveGeneral(text, sort, cbxStatus):
     if sort == 0:
         # 直近ダウンロード
         orderby=('readed', '-dtLast', 'series', 'maxslug')
@@ -36,7 +36,12 @@ def retriveGeneral(text, sort):
     elif sort == 2:
         # 確認日
         orderby=('-maxStatus', 'dtConfirm', 'series', 'maxslug')
-    search = Q(series_name__icontains = text) if text else Q()
+    if cbxStatus:
+        cbxStatus = Q(status=cbxStatus)
+    else:
+        cbxStatus = Q()
+
+    search = Q(series_name__icontains = text) if text else Q(cbxStatus)
     series = Series.objects.prefetch_related('info').filter((Q(info__genrue_id = 1) | Q(info__genrue_id = 2)), search).\
         annotate(series=Max('series_name'), 
                  maxslug=Max('slug'), 

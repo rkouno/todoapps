@@ -105,13 +105,13 @@
             <div class="card-body">
                 {% if pdf %}
                 <object data="{{ pdf }}" type="application/pdf" width="100%" height="700px">
-                    <param name="initZoom" value="fitToPage" />
+                    <param name="initZoom" />
                 </object>
                 {% endif%}
                 {% if images %}
                 <a href="#" class="save btn btn-outline-dark" onclick="imageView(1)"><i class="bi bi-file-slides"></i></a>
                 <a href="#" class="save btn btn-outline-dark" onclick="imageView(2)"><i class="bi bi-grid-fill"></i></a>
-                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div id="carouselExampleControls" class="carousel" data-bs-ride="carousel">
                     <div class="carousel-inner">
                         {% for image in images %}
                         {% if image.id == 1 %}

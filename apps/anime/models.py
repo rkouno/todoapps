@@ -2,10 +2,12 @@ from ast import keyword
 from statistics import mode
 from tabnanny import verbose
 from tokenize import group
-
+from django import template
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+
+from apps.commons.const import appconst
 
 # Create your models here.
 class Period(models.Model):
@@ -40,7 +42,10 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
-
+    
+    def link(self):
+        return self.url.replace('localhost', appconst.IP_ADDRESS)
+    
 class Adult(models.Model):
     path     = models.CharField(max_length = 255, blank=False, null=False, verbose_name='パス')
     title    = models.CharField(max_length = 255, blank=False, null=False, verbose_name='タイトル')
@@ -53,6 +58,9 @@ class Adult(models.Model):
     
     def __str__(self):
         return self.title
+    
+    def link(self):
+        return self.url.replace('localhost', appconst.IP_ADDRESS)
     
 class Torrent(models.Model):
     torrent_link = models.TextField(primary_key=True, verbose_name='Torrentリンク')

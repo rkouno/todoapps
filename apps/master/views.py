@@ -91,9 +91,7 @@ def author_edit(request, author_id):
     if 'save' in request.POST:
         sau.master.update(
             form,
-            author_name := request.POST['author_name'],
-            general     := request.POST.getlist('general'), 
-            adult       := request.POST.getlist('adult')
+            request.POST['author_name'],
         )
         return redirect('author_list')
     elif 'delete' in request.POST:

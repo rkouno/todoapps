@@ -65,10 +65,12 @@ BOOK
 def workbook_create(request):
     try:
         if 'getList' in request.POST:
+            #bat実行
+            sw.unzip()
+            sw.convertAvif()
             # 最新一覧取得
             sw.getLatestList()
             request.session.clear()
-            # subprocess.run(r"C:\Torrent\unzip.bat")
         elif 'setting' in request.POST:
             sw.settting()
         elif 'replace' in request.POST:
