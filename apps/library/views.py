@@ -172,7 +172,7 @@ def book_edit(request, pk):
             volume     = request.POST['volume']
 
             # コミット
-            sb.update(book, genrue_id, story_by, art_by, title, sub_title, volume)
+            sb.update(book.file_path, book, genrue_id, story_by, art_by, title, sub_title, volume)
         else:
             messages.error(request, form.errors)
             return redirect('book_edit', pk)

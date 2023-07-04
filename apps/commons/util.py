@@ -204,19 +204,23 @@ class utils:
         print(zip_file)
         # zip_file=zip_file.replace('/','\\')
         # out_dir=out_dir.replace('/','\\')
-        args = {
-            appconst.EXE_7ZIP.replace('/','\\'), 
-            ' x ', # x:展開
-            # '-pXXXXXX', #パスワード 
-            f'-o{out_dir}*', 
-            f' "{zip_file}" ',
-        }
-        print(args)
-        subprocess.call(f'"{appconst.EXE_7ZIP}" x -o{out_dir}* "{zip_file}"',shell=True)
+        # args = {
+        #     appconst.EXE_7ZIP.replace('/','\\'), 
+        #     ' x ', # x:展開
+        #     # '-pXXXXXX', #パスワード 
+        #     f'-o{out_dir}*', 
+        #     f' "{zip_file}" ',
+        # }
+        # print(args)
+        # subprocess.check_call(f'"{appconst.EXE_7ZIP}" x -o{out_dir}* "{zip_file}"',shell=True)
+        subprocess.check_call(f'{appconst.UNZIP_BAT} "{zip_file}"',shell=True)
         # subprocess.run(args=args)
         return True
     
     def convertAvif(folder):
         for file in utils.getFiles(folder, appconst.EXTENTION_AVIF):
             fileName = utils.getFileName(file)
-            subprocess.call(f'"{appconst.AVIFDEC}" "{file}" "{folder}/{fileName}.png"',shell=True)
+            proc = subprocess.Popen(f'"{appconst.AVIFDEC}" "{file}" "{folder}/{fileName}.png"',shell=True)
+            if proc.poll():
+                utils.fileDelete(file)
+                print(f'deleted : {file}')

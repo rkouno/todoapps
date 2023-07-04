@@ -66,8 +66,8 @@ def workbook_create(request):
     try:
         if 'getList' in request.POST:
             #bat実行
-            sw.unzip()
-            sw.convertAvif()
+            # sw.unzip()
+            # sw.convertAvif()
             # 最新一覧取得
             sw.getLatestList()
             request.session.clear()

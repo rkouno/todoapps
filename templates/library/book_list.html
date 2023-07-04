@@ -2,6 +2,22 @@
 
 {% load static %}
 {% block content %}
+<!-- Error Message -->
+{% if messages %}
+<div class="card">
+    <div class="card-body">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-octagon me-1"></i>
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- #Error Message -->
+
 <div class="card">
     <div class="card-body">
         <div class="row">

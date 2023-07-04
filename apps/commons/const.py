@@ -33,7 +33,7 @@ class appconst:
     """
     ディレクトリ
     """
-    FOLDER_TORRENT  = 'D:/Torrent/'
+    FOLDER_TORRENT  = 'D:/download/'
     FOLDER_DOWNLOAD = 'D:/download/'
     FOLDER_TODOAPPS = 'D:/todoapps/'
     FOLDER_BASE     = BASE_DIR
@@ -58,8 +58,7 @@ class appconst:
     """
     Bat
     """
-    UNZIP_BAT = os.path.join(FOLDER_BAT, 'unzip_convert.bat')
-    MOVIE_BAT = os.path.join(FOLDER_BAT, 'move_movie.bat')
+    UNZIP_BAT = os.path.join(FOLDER_TORRENT, 'unzip.bat')
 
     """
     拡張子
@@ -106,7 +105,8 @@ class appconst:
     7-zip
     """
     EXE_7ZIP = 'C:/Program Files/7-Zip/7zG.exe'
-    AVIFDEC  = 'D:/Torrent/avifdec.exe'
+    AVIFDEC  = 'D:/download/avifdec.exe'
+    
 class template:
     """
     Anime

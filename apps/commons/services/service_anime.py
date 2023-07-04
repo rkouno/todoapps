@@ -57,8 +57,8 @@ class download:
     登録画面
     """
     # 登録
-    def commit(form, title, keyword, id):
-        period = Period.objects.get(pk=id)
+    def commit(form, id, title, keyword, period_id, isEnd):
+        period = Period.objects.get(pk=period_id)
         # 1：冬　1 ~ 3
         # 2：春　4 ~ 6
         # 3：夏　7 ~ 9
@@ -66,11 +66,15 @@ class download:
         start_month = 1 if period.period == 1 else 4 if period.period == 2 else 7 if period.period == 3 else 10
         end_month = 3 if period.period == 1 else 6 if period.period == 2 else 9 if period.period == 3 else 12
         Anime.objects.update_or_create(
-            title = title,
-            keyword = keyword,
-            dtStart = f"{period.year}-{str(start_month).zfill(2)}-01",
-            dtEnd = utils.get_last_date(period.year, end_month),
-            period = period
+            id = id,
+            defaults = {
+                'title'  : title,
+                'keyword': keyword,
+                'dtStart': f"{period.year}-{str(start_month).zfill(2)}-01",
+                'dtEnd'  : utils.get_last_date(period.year, end_month),
+                'period' : period,
+                'isEnd'  : True if isEnd=='1' else False
+            }
         )
 
     # シーズン作成

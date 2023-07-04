@@ -49,9 +49,11 @@ def anime_new(request):
             if form.is_valid():
                 sab.commit(
                     form,
-                    title   = request.POST['title'], 
+                    id = None,
+                    title = request.POST['title'], 
                     keyword = request.POST['keyword'],
-                    id      = request.POST['period']
+                    period_id = request.POST['period'],
+                    isEnd = request.POST['isEnd']
                 )
                 form = AnimeForm()
         else:
@@ -72,9 +74,11 @@ def anime_edit(request, pk):
             if form.is_valid():
                 sab.commit(
                     form,
+                    id = pk,
                     title = request.POST['title'], 
                     keyword = request.POST['keyword'],
-                    id = request.POST['period']
+                    period_id = request.POST['period'],
+                    isEnd = request.POST['isEnd']
                 )
         else:
             initial = dict(isEnd = anime.isEnd)

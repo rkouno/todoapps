@@ -35,17 +35,21 @@ def updateReadFlg(book):
     b.read_flg = True
     b.save()
 # 書籍情報の更新
-def book_update(genrue_id, book_id, series_id, book_name, file_path, volume):
-    book, updated= Book.objects.update_or_create(
-        genrue    = sg.getObject(genrue_id),
-        book      = si.get(book_id),
-        # series    = ss.getObject(series_id),
-        book_name = book_name,
-        file_path = file_path,
-        volume    = volume,
+def book_update(pk, genrue_id, book_id, book_name, file_path, volume, slug):
+    genrue = sg.getObject(genrue_id)
+    info = si.get(book_id)
+    Book.objects.update_or_create(
+        file_path = pk,
+        defaults={
+            'genrue'    : genrue,
+            'book'      : info,
+            'book_name' : book_name,
+            'volume'    : volume,
+            'slug'      : slug,
+        }
     )
 # コミット
-def update(book, genrue_id, story_by, art_by, title, sub_title, volume):
+def update(pk, book, genrue_id, story_by, art_by, title, sub_title, volume):
     # 拡張子の取得
     extention = utils.getExtention(book.file_path)
     # シリーズの取得
@@ -82,12 +86,13 @@ def update(book, genrue_id, story_by, art_by, title, sub_title, volume):
     file_path   = f"{si.savePath(genrue_id)}{book_name}{extention}"
     # 書籍の更新
     sb.book_update(
+        pk,
         genrue_id, 
         info.book_id, 
-        series.series_name.strip(), 
         book_name.strip(), 
         file_path.strip(), 
-        volume
+        volume,
+        book.slug,
     )
     # 移動&リネーム
     utils.fileMove(book.file_path, file_path)
