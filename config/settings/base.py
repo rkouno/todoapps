@@ -39,7 +39,13 @@ INSTALLED_APPS = [
     'apps.anime.apps.AnimeConfig',
     'apps.book.apps.BookConfig',
     'widget_tweaks',
+    'sslserver',
 ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

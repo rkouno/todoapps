@@ -249,6 +249,7 @@ def update(form, genrue_id, story_by,art_by, title, sub_title, volume):
 def unzip():
     for file in utils.getFiles(appconst.FOLDER_TORRENT, appconst.EXTENTION_ZIP):
         utils.unzip(file, appconst.FOLDER_TORRENT)
+        utils.fileDelete(file)
 
 def convertAvif():
     for folder in utils.getFolders(appconst.FOLDER_TORRENT, appconst.EXTENTION_AVIF):

@@ -16,6 +16,7 @@ class appconst:
     ANIME_URL           = 'https://nyaa.si/?page=rss&q=%s&c=1_4&f=0'
     # nyaa sukebei RSS
     SUKEBEI_URL         = 'https://sukebei.nyaa.si/?page=rss&c=1_4&f=0'
+    SUKEBEI_DOUJIN_URL  = 'https://sukebei.nyaa.si/?page=rss&c=1_2&f=0'
     SUKEBEI_SEARCH_URL  = 'https://sukebei.nyaa.si/?page=rss&q=%s&c=1_4&f=0'
     # dwonload link
     BOOK_DL_URL         = '.*https://nyaa.si/download/.*'
@@ -28,7 +29,7 @@ class appconst:
     IP_ADDRESS  = socket.gethostbyname(socket.gethostname())
     VIDEO_URL   = PROTCOL + 'localhost/Video/'
     TORRENT_URL = PROTCOL + IP_ADDRESS + '/Torrent/'
-    MEDIA_URL   = PROTCOL + IP_ADDRESS + ':8080/'
+    MEDIA_URL   = PROTCOL + IP_ADDRESS + ':80/'
 
     """
     ディレクトリ

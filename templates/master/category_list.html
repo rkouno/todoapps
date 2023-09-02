@@ -18,21 +18,22 @@
 
 <div class="card">
     <div class="card-body">
+        <a href="{% url 'category_new' %}" class="btn btn-success">New</a>
         <div class="row">
             <table class="table table-striped table-hober table-condensed table-sm">
                 <thread class="sticke-top table-dark" style="z-index:1">
                     <tr>
-                        <th>Title</th>
-                        <th>Group</th>
+                        <th>category</th>
+                        <th>adult</th>
                         <th></th>
                     </tr>
                 </thread>
                 <tbody>
-                    {% for adult in adults %}
+                    {% for category in categories %}
                     <tr>
-                        <td>{{ adult.title }}</td>
-                        <td>{{ adult.group }}</td>
-                        <td><a href="{% url 'adult_edit' adult.id %}" class="btn btn-success">edit</a></td>
+                        <td>{{ category.category }}</td>
+                        <td>{{ category.adult_flg }}</td>
+                        <td><a href="{% url 'category_edit' category.slug %}" class="btn btn-success">edit</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -26,7 +26,7 @@ def getObject(pk):
     return series
 
 # 一覧（一般コミック・一般小説）
-def retriveGeneral(text, sort, cbxStatus):
+def retriveGeneral(text, sort, cbxStatus, cbxRead):
     if sort == 0:
         # 直近ダウンロード
         orderby=('readed', '-dtLast', 'series', 'maxslug')
@@ -40,9 +40,13 @@ def retriveGeneral(text, sort, cbxStatus):
         cbxStatus = Q(status=cbxStatus)
     else:
         cbxStatus = Q()
+    if cbxRead:
+        cbxRead = Q(info__book__read_flg=cbxRead)
+    else:
+        cbxRead = Q()
 
-    search = Q(series_name__icontains = text) if text else Q(cbxStatus)
-    series = Series.objects.prefetch_related('info').filter((Q(info__genrue_id = 1) | Q(info__genrue_id = 2)), search).\
+    search = Q(series_name__icontains = text) if text else Q(cbxStatus,cbxRead)
+    series = Series.objects.prefetch_related('info').exclude(info__book=None).filter((Q(info__genrue_id = 1) | Q(info__genrue_id = 2)), search).\
         annotate(series=Max('series_name'), 
                  maxslug=Max('slug'), 
                  dtLast=Max('info__book__regist_date'), 
@@ -64,7 +68,7 @@ def retriveHentai(text, sort):
         # 確認日
         orderby=('-dtConfirm','series', 'maxslug')
     search = Q(series_name__icontains = text) if text else Q()
-    series = Series.objects.prefetch_related('info').filter((Q(info__genrue_id = 3) | Q(info__genrue_id = 4)), search).\
+    series = Series.objects.prefetch_related('info').exclude(info__book=None).filter((Q(info__genrue_id = 3) | Q(info__genrue_id = 4)), search).\
         annotate(series=Max('series_name'), 
                  maxslug=Max('slug'), 
                  dtLast=Max('info__book__regist_date'), 

@@ -10,6 +10,7 @@ from apps.commons.const import template
 
 # form
 from apps.anime.forms import AnimeForm
+from apps.anime.forms import HentaiForm
 
 # service
 from apps.commons.services import service_video as sv
@@ -63,6 +64,7 @@ def anime_new(request):
         print(e)
         messages.error(request, e)
     return render(request, template.ANIME_EDIT, {'form': form})
+
 # 編集
 def anime_edit(request, pk):
     try:
@@ -88,6 +90,7 @@ def anime_edit(request, pk):
         print(e)
         messages.error(request, e)
     return redirect('anime_list')
+
 """
 ビデオ
 """
@@ -101,15 +104,19 @@ def video_index(request, sort_code):
         print(e)
         messages.error(request, e)
     return render(request, 'video/video_index.html', { 'videos' : videos, 'sort_code' : sort_code})
+
 # 一覧(エロアニメ)
 def hentai_index(request, sort_code):
     try:
         request.session['sort_code'] = sort_code
         videos = sv.retriveVideo(appconst.HENTAI, sort_code)
+        form = HentaiForm()
+        param = { 'videos' : videos, 'sort_code' : sort_code, 'form' : form }
     except Exception as e:
         print(e)
         messages.error(request, e)
-    return render(request, 'video/video_index.html', { 'videos' : videos, 'sort_code' : sort_code})
+    return render(request, 'video/hentai_index.html', param)
+
 # ダウンロード済みアニメを登録・整理
 def video_list(request):
     try:
@@ -119,14 +126,17 @@ def video_list(request):
         print(e)
         messages.error(request, e)
     return redirect('video_index', appconst.SORT_RECENT)
+
 # エロアニメを登録
 def hentai_list(request):
     sv.registVideo(appconst.HENTAI, appconst.FOLDER_UNWATCH_HENTAI, appconst.FOLDER_WATCHED_HENTAI)
     return redirect('hentai_index', appconst.SORT_RECENT)
+
 # 一覧・削除（論理）
 def video_delete(request, id, tag):
     sv.updateProcess(tag, id, 'delete')
     return redirect('video_index', request.session['sort_code'])
+
 # 視聴画面・ボタン操作
 def video_watch(request, id, tag):
     try:        
@@ -151,6 +161,7 @@ def video_watch(request, id, tag):
         messages.error(request, e)
     # 一覧へ戻る
     return redirect(f'{tag}_index', sort_code)
+
 # 一覧/視聴画面・ダウンロード
 def video_download(request, id, tag):
     try:

@@ -56,10 +56,46 @@ class download:
                         hentai_html = utils.WebScraping(nyaa_content)
                         hentai_cover_url = re.search('.*https://hentai-covers.site/image/.*', str(hentai_html))
                         if hentai_cover_url:
-                            hentai_cover_url = hentai_cover_url.group().replace('**','').replace('</div>', '')
-                            hentai_html = utils.WebScraping(hentai_cover_url)
-                            hentai_cover_url = re.search('src="https://hentai-covers.site/images/.*', str(hentai_html))
-                            hentai_cover_url = re.split(' ', re.split('src="', hentai_cover_url.group())[1])[0].replace('"','')
+                            try:
+                                hentai_cover_url = hentai_cover_url.group().replace('**','').replace('</div>', '')
+                                hentai_html = utils.WebScraping(hentai_cover_url)
+                                hentai_cover_url = re.findall('https://hentai-covers.site/images/.* ', str(hentai_html))
+                                hentai_cover_url = hentai_cover_url[0].replace('" ','')
+                            except Exception as e:
+                                print(e)
+
+                        # 登録
+                        bt.objects.create(
+                            title        = title,
+                            torrent_link = link,
+                            img_link     = hentai_cover_url,
+                            adult_flg    = True,
+                        )
+         # Web Scraping
+        url = appconst.SUKEBEI_DOUJIN_URL
+        html = utils.WebScraping(url)
+        for item in re.split('<item>', str(html)):
+            title = re.search('<title>.*</title>', item).group().replace('<title>', '').replace('</title>', '')
+            link = re.search('.*https://sukebei.nyaa.si/download/.*', item)
+            if link:
+                link = link.group().replace('<link/>', '')
+                cnt = bt.objects.filter(torrent_link=link).count()
+                if cnt == 0:
+                    nyaa_content = re.search('.*https://sukebei.nyaa.si/view/.*', item)
+                    if nyaa_content:
+                        nyaa_content = nyaa_content.group()
+                        hentai_cover_url = ''
+                        nyaa_content = re.split('<',re.split('>', nyaa_content)[1])[0]
+                        hentai_html = utils.WebScraping(nyaa_content)
+                        hentai_cover_url = re.search('.*https://hentai-covers.site/image/.*', str(hentai_html))
+                        if hentai_cover_url:
+                            try:
+                                hentai_cover_url = hentai_cover_url.group().replace('**','').replace('</div>', '')
+                                hentai_html = utils.WebScraping(hentai_cover_url)
+                                hentai_cover_url = re.findall('https://hentai-covers.site/images/.* ', str(hentai_html))
+                                hentai_cover_url = hentai_cover_url[0].replace('" ','')
+                            except Exception as e:
+                                print(e)
 
                         # 登録
                         bt.objects.create(

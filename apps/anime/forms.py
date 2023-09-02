@@ -1,5 +1,6 @@
 from django import forms
 from .models import Anime
+from .models import Category
 from .models import Period
 from django.contrib.admin.widgets import AdminDateWidget
 
@@ -11,6 +12,10 @@ class CustomModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj): # label_from_instance 関数をオーバーライド
          return f"{obj.year} {obj.season}" # 表示したいカラム名を return
 
+class CustomModelChoiceField2(forms.ModelChoiceField):
+    def label_from_instance(self, obj): # label_from_instance 関数をオーバーライド
+         return f"{obj.category}" # 表示したいカラム名を return
+    
 class AnimeForm(forms.ModelForm):
     class Meta:
         model = Anime
@@ -41,5 +46,17 @@ class AnimeForm(forms.ModelForm):
         required = True, 
         label    = 'Status',
         initial  = 0, 
+        widget   = forms.widgets.Select(attrs={'class':'form-select'})
+    )
+class HentaiForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = {'category'}
+
+    # セレクトボックス
+    category = CustomModelChoiceField2(
+        queryset  = Category.objects.all().filter(adult_flg=1).order_by('kana'),
+        required = False,
+        label    = 'category',
         widget   = forms.widgets.Select(attrs={'class':'form-select'})
     )

@@ -3,7 +3,6 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib import messages
-import subprocess
 
 # common
 from django.core.paginator import Paginator
@@ -24,38 +23,69 @@ DOWNLOAD
 """
 # Nyaa>一覧
 def nyaa_list(request):
-    torrents = st.retriveTorrentNyaa()
-    params   = { 'torrents' : torrents }
-    return render(request, 'download/nyaa_list.html', params)
+    try:
+        torrents = st.retriveTorrentNyaa()
+        params   = { 'torrents' : torrents }
+        return render(request, 'download/nyaa_list.html', params)
+    except Exception as e:
+        print(e)
+        messages.error(request. e)
+
 # Nyaa>一覧の更新
 def nyaa_webscrap(request):
-    download.nyaa_webscrapping()
+    try:
+        download.nyaa_webscrapping()
+    except Exception as e:
+        print(e)
+        messages.error(request. e)
     return redirect('nyaa_list')
+
 # Nyaa>ダウンロード
 def nyaa_download(request, pk):
-    model = st.getObjectBookTorrent(pk)
-    # Torrentファイルのダウンロード
-    st.downloadTorrentFile(model.torrent_link, model.title)
-    # ダウンロード済みの更新
-    st.updBookTorrent(pk)
+    try:
+        model = st.getObjectBookTorrent(pk)
+        # Torrentファイルのダウンロード
+        st.downloadTorrentFile(model.torrent_link, model.title)
+        # ダウンロード済みの更新
+        st.updBookTorrent(pk)
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
     return redirect('nyaa_list')
+
 # Sukebei>一覧
 def sukebei_list(request):
-    torrents = st.retriveTorrentAdult()
-    params   = { 'torrents' : torrents }
-    return render(request, 'download/sukebei_list.html', params)
+    try:
+        torrents = st.retriveTorrentAdult()
+        params   = { 'torrents' : torrents }
+        return render(request, 'download/sukebei_list.html', params)
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
+
 # Sukebei>一覧の更新
 def sukebei_webscrap(request):
-    download.sukebei_webscrapping()
+    try:
+        download.sukebei_webscrapping()
+    except Exception as e:
+        print(e)
+        messages.error(request, e)
     return redirect('sukebei_list')
+
 # Sukebei>ダウンロード
 def sukebei_download(request, pk):
-    model = st.getObjectBookTorrent(pk)
-    # Torrentファイルのダウンロード
-    st.downloadTorrentFile(model.torrent_link, model.title)
-    # ダウンロード済みの更新
-    st.updBookTorrent(pk)
+    try:
+        model = st.getObjectBookTorrent(pk)
+        # Torrentファイルのダウンロード
+        st.downloadTorrentFile(model.torrent_link, model.title)
+        # ダウンロード済みの更新
+        st.updBookTorrent(pk)
+    except Exception as e:
+        print(e)
+        messages.errot(request, e)
+
     return redirect('sukebei_list')
+
 """
 BOOK
 """
@@ -66,8 +96,7 @@ def workbook_create(request):
     try:
         if 'getList' in request.POST:
             #bat実行
-            # sw.unzip()
-            # sw.convertAvif()
+            sw.unzip()
             # 最新一覧取得
             sw.getLatestList()
             request.session.clear()
@@ -103,6 +132,7 @@ def workbook_process(request):
     process = request.POST['process']
     sw.process(id, process)
     return JsonResponse('', safe=False)
+
 # ------------
 # 編集画面
 # ------------

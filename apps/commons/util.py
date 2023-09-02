@@ -96,7 +96,12 @@ class utils:
     Webスクレイピング
     """
     def WebScraping(url):
-        req = requests.get(url)
+        headers = {
+            'User-Agent':'Mozilla/5.0',
+            "referer":'https://hentai-covers.site/'
+        }
+
+        req = requests.get(url, headers=headers)
         html = BeautifulSoup(req.content, 'html.parser')
         return html
     """
@@ -202,19 +207,7 @@ class utils:
     """
     def unzip(zip_file, out_dir):
         print(zip_file)
-        # zip_file=zip_file.replace('/','\\')
-        # out_dir=out_dir.replace('/','\\')
-        # args = {
-        #     appconst.EXE_7ZIP.replace('/','\\'), 
-        #     ' x ', # x:展開
-        #     # '-pXXXXXX', #パスワード 
-        #     f'-o{out_dir}*', 
-        #     f' "{zip_file}" ',
-        # }
-        # print(args)
-        # subprocess.check_call(f'"{appconst.EXE_7ZIP}" x -o{out_dir}* "{zip_file}"',shell=True)
         subprocess.check_call(f'{appconst.UNZIP_BAT} "{zip_file}"',shell=True)
-        # subprocess.run(args=args)
         return True
     
     def convertAvif(folder):

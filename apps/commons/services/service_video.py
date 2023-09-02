@@ -22,10 +22,13 @@ def retriveVideo(tag, sort_code):
     # ソート順
     if sort_code == 1:
         order_colum='group'
+        title_group='group'
     elif sort_code == 2:
         order_colum='title'
+        title_group='title'
     else:
-        order_colum='-dtRegist'
+        order_colum=('-dtRegist')
+        title_group='group'
 
     if appconst.VIDEO in tag:
         videos = Video.objects.filter(process__isnull=True).\
@@ -46,7 +49,7 @@ def retriveVideo(tag, sort_code):
                 annotate(last_episode = Min('episode'), 
                         last_id       = Min('id'), 
                         dtRegist      = Max('dtRegist'), 
-                        group_title   = Max('group')).\
+                        group_title   = Max(title_group)).\
                     values('last_id', 'group_title', 'last_episode').\
                         order_by(order_colum)
     return videos
@@ -58,10 +61,9 @@ def moveVideo():
     for file in videoFiles:
         if utils.isFile(file):
             utils.fileMove(file, appconst.FOLDER_UNWATCH_VIDEO)
-            # utils.fileDelete(file)
 
 # ビデオ登録
-def registVideo(tag, folder_path, watched_path):
+def registVideo(tag, unwatched_path, watched_path):
     try:
         # 処理
         if appconst.VIDEO in tag:
@@ -88,7 +90,7 @@ def registVideo(tag, folder_path, watched_path):
             Adult.objects.update(process='delete')
 
         # ビデオの登録
-        videoFiles = utils.getFiles(folder_path, appconst.EXTENTION_VIDEO)
+        videoFiles = utils.getFiles(unwatched_path, appconst.EXTENTION_VIDEO)
         for file in videoFiles:
             movies = ''
             if appconst.VIDEO in tag:
@@ -118,9 +120,10 @@ def registVideo(tag, folder_path, watched_path):
                 if appconst.VIDEO in tag:
                     Video.objects.create(title = title, path = file, episode = episode, url = url, group = group)
                 elif tag in appconst.HENTAI:
-                    Adult.objects.create(title = title, path = file, episode = episode, url = url, group = group)
+                    Adult.objects.create(title = title, path = file, episode = episode, url = url, group = title)
     except Exception as e:
         print(e)
+
 # 処理フラグ更新
 def updateProcess(tag, id, process):
     if appconst.VIDEO in tag:

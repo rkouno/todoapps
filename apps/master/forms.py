@@ -2,18 +2,46 @@ from django import forms
 
 #model
 from apps.anime.models import Adult
+from apps.anime.models import Kana
+from apps.anime.models import Category
 from apps.book.models import Author
 from apps.book.models import Series
 from apps.book.models import Info
 
+# セレクトボックス
+class CustomModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj): # label_from_instance 関数をオーバーライド
+         return f"{obj.category}" # 表示したいカラム名を return
+    
 class AdultForm(forms.ModelForm):
     class Meta:
         model = Adult
-        fields = ('title','group')
+        fields = ('title','group','category','score')
         widgets = {
-            'title' :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Title' }), 
-            'group' :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Series' }), 
+            'title'    :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Title' }), 
+            'group'    :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Series' }), 
+            'category' :forms.widgets.Select(attrs={'class':'form-select' }), 
+            'score'    :forms.NumberInput(attrs={'class':'form-control', }), 
         }
+    category = CustomModelChoiceField(
+        queryset = Category.objects.all().order_by('slug'),
+        widget   = forms.widgets.Select(attrs={'class':'form-select'}),
+        
+    )
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ('category', 'kana', 'adult_flg')
+        widgets = {
+            'category' :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Category' }), 
+            'adult_flg' :forms.CheckboxInput(attrs={'class':'form-check-input', 'placeholder':'Adlut' }), 
+        }
+    kana = forms.ModelChoiceField(
+        queryset = Kana.objects.all().order_by('id'),
+        widget   = forms.widgets.Select(attrs={'class':'form-select'}),
+    )
+
 class SeriesForm(forms.ModelForm):
     class Meta:
         model = Series

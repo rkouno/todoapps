@@ -45,13 +45,20 @@
                     {% csrf_token %}
                     <div class="row mb-3">
                         <div class="col-sm-6"><input type="text" name="txtSearch" value="{{ request.session.txtSearch }}" class="form-control" /></div>
+
                         <div class="col-sm-2">
                             <select id="cbxStatus" name="cbxStatus" class="form-control">
-                                <option value="" {{ request.session.cbxStatus }} >全て</option>
-                                <option value="0">連載中</option>
-                                <option value="1">連載停止</option>
-                                <option value="2">完結</option>
-                                <option value="3">未完</option>
+                                {% for key, value in cbxStatus.items %}
+                                <option value="{{ key }}" >{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <select id="cbxRead" name="cbxRead" class="form-control">
+                                <option value="" >全て</option>
+                                {% for key, value in cbxRead.items %}
+                                <option value="{{ key }}" >{{ value }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-sm-2"><button type="submit" id="search" name="search" class="btn btn-success">search</button></div>
@@ -421,7 +428,7 @@
     </div>
 </div>
 <script>
-    $('#cbxStatus').on('change', function() {
+    $('#cbxStatus,#cbxRead').on('change', function() {
         console.log($(this).val());
         $('#search').click();
     });

@@ -14,6 +14,7 @@ from apps.anime.models import Anime
 from apps.anime.models import Period
 from apps.anime.models import Torrent
 from apps.anime.models import Adult
+from apps.anime.models import Category
 
 class download:
     """
@@ -96,14 +97,33 @@ class download:
 
 class master:
     def getAll():
-        adults = Adult.objects.all()
+        adults = Adult.objects.all().order_by('dtRegist','group','title')
         return adults
 
     def get(id):
         return get_object_or_404(Adult, pk=id)
 
-    def commit(id, title, group):
+    def commit(id, title, group, score, slug):
+        slug = Category.objects.get(slug=slug)
+        if not slug:
+            slug = None
+        if not score:
+            score = None
+        
         adult = Adult.objects.get(pk=id)
-        adult.title = title
-        adult.group = group
-        adult.save()
+        fileName = utils.getFileName(adult.path)
+        extention = utils.getExtention(adult.path)
+        fileName = utils.replace(fileName, extention, '')
+        before = str.replace(adult.path, fileName, title)
+        utils.fileMove(adult.path, before)
+
+        Adult.objects.update_or_create(
+            id = id,
+            defaults= {
+                'path'    : before,
+                'title'   : title,
+                'group'   : group,
+                'score'   : score,
+                'category': slug
+            }
+        )

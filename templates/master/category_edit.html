@@ -1,0 +1,34 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<!-- Error Message -->
+{% if messages %}
+<div class="card">
+    <div class="card-body">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-octagon me-1"></i>
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endif %}
+<!-- #Error Message -->
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Edit category</h5>
+
+        <form method="POST" class="post-form">
+            {% csrf_token %}
+            {{ form }}
+            <div>
+                <button type="submit" name="save" class="btn btn-primary">Save</button>
+                <button type="submit" name="delete" class="btn btn-secondary">Delete</button>
+                <a href="{% url 'category_list' %}" class="btn btn-outline-dark">back</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
