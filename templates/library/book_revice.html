@@ -1,5 +1,6 @@
 {% extends 'common/base.html' %}
 {% block content %}
+
 <!-- Error Message -->
 {% if messages %}
 <div class="card">
@@ -18,7 +19,7 @@
 
 <div class="card">
     <div class="card-body">
-        The following files have been moved to the Torrent folder 
+        The following files have been moved to the Torrent folder
     </div>
 </div>
 <div class="card">
@@ -30,14 +31,14 @@
                     <th>book_name</th>
                     <th></th>
                 </tr>
-            </thread>
-            <tbody>
-                {% for list in models %}
-                <tr>
-                    <td>{{ list }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
+        </thread>
+        <tbody>
+            {% for list in models %}
+            <tr>
+                <td>{{ list }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
         </table>
     </div>
 </div>

@@ -1,38 +1,67 @@
 @echo off
 
-rem 
+rem ’x‰„ŠÂ‹«•Ï”İ’è
 setlocal enabledelayedexpansion
 
-rem 
+rem ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ÖˆÚ“®
 cd /d %~dp0
+set filepath=%1
 
-:loop
- 
-rem å¼•æ•°ãŒãªããªã‚Œã°ãƒ«ãƒ¼ãƒ—ã‹ã‚‰å‡ºã¦ã€Œ:confirmã€ã¸é£›ã¶
-if "%~n1"=="" goto :confirm
+call :convertavif %filepath%
 
-rem ãƒ•ã‚©ãƒ«ãƒ€åã‚’ä¿å­˜
-set folder=%~n1
+exit /b
 
-rem å¤‰æ›ã§ãã‚‹ãƒ•ã‚©ãƒ«ãƒ€åã«å¤‰æ›´
-rename "%folder%" convert
+:convertavif
 
-rem å¤‰æ›
-for /R "./convert"  %%a in (*.avif) do (
-	avifdec.exe "%%a" "%%~dpa%%~na.jpg"
-	del %%a
-)
+@REM Šg’£qæ“¾
+set extention=%~x1
 
-rem ãƒ•ã‚©ãƒ«ãƒ€åã‚’ã‚‚ã¨ã«æˆ»ã™
-rename convert "%folder%"
+@REM Œ»İ“ú
+set time2=%time: =0%
+set datetime=%date:~0,4%%date:~5,2%%date:~8,2%%time2:~0,2%%time2:~3,2%%time2:~6,2%
 
-rem å¼•æ•°ã‚’ä¸€ã¤ãšã‚‰ã™
-shift
- 
-rem ã€Œ:loopã€ã¸æˆ»ã£ã¦ãƒ«ãƒ¼ãƒ—ã‚’ç¶šã‘ã‚‹
-goto loop
+set convertfile=convert%datetime%
+
+if exist %~1\nul (
+    :loop
+    
+    rem ˆø”‚ª‚È‚­‚È‚ê‚Îƒ‹[ƒv‚©‚ço‚Äu:confirmv‚Ö”ò‚Ô
+    if "%~n1"=="" goto :confirm
+
+    rem ƒtƒHƒ‹ƒ_–¼‚ğ•Û‘¶
+    set folder=%~1
+    set file=%folder:~12%
+    echo %file%@‚ğˆ—
+
+    echo %folder%>>log.txt
+
+    rem •ÏŠ·‚Å‚«‚éƒtƒHƒ‹ƒ_–¼‚É•ÏX
+    echo "%folder%"@‚ğ@%convertfile%@‚ÉƒŠƒl[ƒ€
+    echo %folder%/%convertfile%
+    rename "%folder%" %convertfile%
+
+    echo •ÏŠ·ŠJn
+    rem •ÏŠ·
+    for /R "./"%convertfile%  %%a in (*.avif) do (
+     	avifdec.exe "%%a" "%%~dpa%%~na.jpg"
+     	del %%a
+    )
+    echo •ÏŠ·I—¹
+
+    rem ˆø”‚ğˆê‚Â‚¸‚ç‚·
+    shift
+    
+    rem u:loopv‚Ö–ß‚Á‚Äƒ‹[ƒv‚ğ‘±‚¯‚é
+    goto loop
 
 :confirm
 
-rem çµ‚äº†
-@REM exit
+)
+
+rem ƒtƒHƒ‹ƒ_–¼‚ğ‚à‚Æ‚É–ß‚·
+echo D:\download\%convertfile%@‚ğ@"%file%"@‚ÉƒŠƒl[ƒ€
+rename D:\download\%convertfile% "%file%"
+echo ˆ—I—¹
+
+rem I—¹
+exit /b

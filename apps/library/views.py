@@ -13,10 +13,13 @@ from apps.book.froms import BookForm
 from apps.master.forms import SeriesForm
 
 #service
+from apps.commons.services import service_genrue   as sg
 from apps.commons.services import service_series   as ss
 from apps.commons.services import service_bookInfo as si
 from apps.commons.services import service_book     as sb
 from apps.commons.services import service_torrent  as st
+from apps.commons.services import service_category as sc
+from apps.commons.services import service_status   as sst
 
 #download
 from django.http import StreamingHttpResponse
@@ -29,25 +32,50 @@ from wsgiref.util import FileWrapper
 #一覧(一般)
 def book_general(request, sort):
     try:
-        # 検索条件設定
         if 'search' in request.POST:
-            request.session['cbxStatus'] = request.POST.get('cbxStatus')
-            request.session['cbxRead'] = request.POST.get('cbxRead')
-            request.session['txtSearch'] = request.POST['txtSearch']
+            # 画面値取得
+            request.session['cbxGenrue'] = getKey(request, 'cbxGenrue')
+            request.session['cbxStatus'] = getKey(request, 'cbxStatus')
+            request.session['cbxRead']   = getKey(request, 'cbxRead')
+            request.session['txtSearch'] = getKey(request, 'txtSearch')
+        
+        cbxGenrue = request.session.get('cbxGenrue', 0)
         cbxStatus = request.session.get('cbxStatus', 0)
-        cbxRead = request.session.get('cbxRead', 0)
-        search    = request.session.get('txtSearch', '')
+        cbxRead   = request.session.get('cbxRead', 0)
+        txtSearch = request.session.get('txtSearch', '')
+
         # ソートモード設定
         request.session['sort'] = sort
         # データ取得
-        model = ss.retriveGeneral(search, sort, cbxStatus, cbxRead)
+        model = ss.retriveGeneral(txtSearch, sort, cbxGenrue, cbxStatus, cbxRead)
         # ページネーション設定
         models = pagenation(request, model)
         # パラメーター設定
-        paramKey = 'books'
-        cbxStatus = {'' : '全て', '0' :'連載中', '1' : '連載停止', '2' : '完結', '3' : '未完'}
-        cbxRead = {'0':'未読','1':'既読'}
-        params = {'models' : models, 'alias' : paramKey, 'cbxStatus' : cbxStatus, 'cbxRead' : cbxRead}
+        paramKey  = 'books'
+        prmGenrue = {
+            '1' : '一般コミック',
+            '2' : '一般小説',
+            '3' : '成年コミック',
+            '4' : '成年小説',
+        }
+        prmStatus = {
+            '0' : '連載中',
+            '1' : '連載停止',
+            '2' : '完結',
+            '3' : '未完',
+        }
+        prmRead   = {
+            '0' : '未読',
+            '1' : '既読'
+        }
+        params    = {
+            'models'   : models, 
+            'alias'    : paramKey, 
+            'cbxGenrue': prmGenrue, 
+            'cbxStatus': prmStatus, 
+            'cbxRead'  : prmRead,
+            'selectGenrue' : str(cbxGenrue), 
+        }
 
         return render(request, 'library/book_list.html', params)
     except Exception as e:
@@ -59,17 +87,26 @@ def book_hentai(request, sort):
     try:
         # 検索条件設定
         if 'search' in request.POST:
-            request.session['txtSearch']=request.POST['txtSearch']
-        search = request.session.get('txtSearch')
+            # 画面値取得
+            request.session['cbxCategory'] = getKey(request, 'cbxCategory')
+            request.session['cbxRead']     = getKey(request, 'cbxRead')
+            request.session['txtSearch']   = getKey(request, 'txtSearch')
+
+        search      = request.session.get('txtSearch', '')
+        cbxCategory = request.session.get('cbxCategory', 0)
+        cbxRead     = request.session.get('cbxRead', 0)
+
         # ソートモード設定
         request.session['sort'] = sort
         # データ取得
-        model = ss.retriveHentai(search, sort)
+        model = ss.retriveHentai(search, sort, cbxCategory, cbxRead)
         # ページネーション設定
         models = pagenation(request, model)
         # パラメーター設定    
         paramKey = 'author'
-        params = {'models' : models, 'alias' : paramKey}
+        cbxRead = {'0':'未読','1':'既読'}
+        cbxCategory = sc.master.getAll()
+        params = {'models' : models, 'alias' : paramKey, 'cbxRead' : cbxRead, 'cbxCategory' : cbxCategory}
 
         return render(request, 'library/book_list.html', params)
     except Exception as e:
@@ -113,6 +150,8 @@ def book_series(request, slug):
     except Exception as e:
         print(e)
         messages.error(request, e)
+    
+    return redirect('book_general',1)
 
 #シリーズ一覧(成年コミック・成年小説)
 def book_series_author(request, slug):
@@ -151,6 +190,10 @@ def book_series_edit(request, slug):
         print(e)
         messages.error(request, e)
 
+def book_zip(request, slug):
+    sb.zip(slug)
+    return redirect('book_general', 1)
+
 # 書籍ダウンロード
 def book_download(request, slug):
     try:
@@ -172,6 +215,7 @@ def book_download(request, slug):
     except Exception as e:
         print(e)
         messages.error(request, e)
+
 # nyaaダウンロード
 def book_nyaa(request, torrent_link):
     model = st.getObjectBookTorrent(torrent_link)
@@ -258,3 +302,22 @@ def pagenation(request, model, *args):
         page = request.GET.get(alias, 1)
     models = paginator.get_page(page) # 指定のページのArticleを取得
     return models
+
+"""
+共通（セッション取得）
+"""
+def getSession(request, key):
+    try:
+        return request.session[key]
+    except Exception as e:
+        return ''
+
+"""
+共通（セッション取得）
+"""
+def getKey(request, key):
+    try:
+        print(request.POST.get(key))
+        return request.POST.get(key)
+    except Exception as e:
+        return request.session[key]

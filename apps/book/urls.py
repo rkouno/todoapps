@@ -24,6 +24,13 @@ urlpatterns = [
     path('sukebei/', views.sukebei_list, name='sukebei_list'),
     path('sukebei/webscrap', views.sukebei_webscrap, name='sukebei_webscrap'),
     path('sukebei/download/<url:pk>', views.sukebei_download, name='sukebei_download'),
+    # Download > 一覧(Check)
+    path('check/', views.check_list, name='check_list'),
+    path('check/book', views.book_webscrap, name='book_webscrap'),
+    path('check/booklist', views.book_list, name='book_list'),
+    path('check/booklist/nyaa/<url:pk>', views.check_nyaa_download, name='check_nyaa_download'),
+    path('check/booklist/sukebei/<url:pk>', views.check_sukebei_download, name='check_sukebei_download'),
+    path('check/booklist/edit/<slug:pk>', views.check_edit, name='check_edit'),
     # Books > 一覧
     path('create/', views.workbook_create, name='workbook_create'),
     path('create/process/', views.workbook_process, name='workbook_process'),

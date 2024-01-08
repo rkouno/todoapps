@@ -24,6 +24,8 @@ urlpatterns = [
     path('series/<slug:slug>', views.book_series, name='book_series'),
     path('series/edit/<slug:slug>', views.book_series_edit, name='book_series_edit'),
     path('serieshentai/<slug:slug>', views.book_series_author, name='book_series_author'),
+    # 一覧 > シリーズ一覧 > 圧縮
+    path('series/zip/<slug:slug>', views.book_zip, name='book_zip'),
     # 一覧 > シリーズ一覧 > ダウンロード
     path('series/download/<slug:slug>', views.book_download, name='book_download'),
     # 一覧 > シリーズ一覧 > 編集

@@ -7,7 +7,7 @@ from apps.anime.models import Kana
 
 class master:
     def getAll():
-        category = Category.objects.all().order_by('category')
+        category = Category.objects.all().order_by('kana')
         return category
 
     def get(slug):

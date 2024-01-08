@@ -3,6 +3,8 @@ import re
 import datetime
 from urllib import request
 from django.shortcuts import get_object_or_404
+from django.db.models import Max
+from django.utils import timezone
 
 # common
 from apps.commons.const import appconst
@@ -11,7 +13,10 @@ from apps.commons.util import utils
 #model
 from apps.anime.models import Torrent as at
 from apps.book.models import Torrent as bt
-
+from apps.book.models import Book
+from apps.book.models import Series
+from apps.anime.models import Video
+from apps.commons.services import service_series as ss
 # service 
 
 """
@@ -20,59 +25,33 @@ home
 class home:
     # 直近ダウンロード（書籍）
     def recentBookDownloads(dt):
-        bookTorrents = bt.objects.filter(regist_date__gt=dt, downloaded=1).order_by('-regist_date')
+        bookTorrents = Book.objects.filter(regist_date__gt=dt).order_by('-regist_date')
         return bookTorrents
     # 直近ダウンロード（アニメ）
     def recentAnimeDownloads(dt):
-        animeTorrent = at.objects.filter(dtRegist__gt=dt).order_by('-dtRegist')
+        animeTorrent = Video.objects.filter(dtRegist__gt=dt).order_by('-dtRegist')
         return animeTorrent
 
 """
 Download
 """
 class download:
-    # Webscrapping
     def sukebei_webscrapping():
         dt1 = datetime.datetime.now()
         dt2 = dt1 + datetime.timedelta(days=-14)
         # 削除
         bt.objects.filter(regist_date__lt = dt2, adult_flg=True).delete()
 
-        # Web Scraping
-        url = appconst.SUKEBEI_URL
-        html = utils.WebScraping(url)
-        for item in re.split('<item>', str(html)):
-            title = re.search('<title>.*</title>', item).group().replace('<title>', '').replace('</title>', '')
-            link = re.search('.*https://sukebei.nyaa.si/download/.*', item)
-            if link:
-                link = link.group().replace('<link/>', '')
-                cnt = bt.objects.filter(torrent_link=link).count()
-                if cnt == 0:
-                    nyaa_content = re.search('.*https://sukebei.nyaa.si/view/.*', item)
-                    if nyaa_content:
-                        nyaa_content = nyaa_content.group()
-                        hentai_cover_url = ''
-                        nyaa_content = re.split('<',re.split('>', nyaa_content)[1])[0]
-                        hentai_html = utils.WebScraping(nyaa_content)
-                        hentai_cover_url = re.search('.*https://hentai-covers.site/image/.*', str(hentai_html))
-                        if hentai_cover_url:
-                            try:
-                                hentai_cover_url = hentai_cover_url.group().replace('**','').replace('</div>', '')
-                                hentai_html = utils.WebScraping(hentai_cover_url)
-                                hentai_cover_url = re.findall('https://hentai-covers.site/images/.* ', str(hentai_html))
-                                hentai_cover_url = hentai_cover_url[0].replace('" ','')
-                            except Exception as e:
-                                print(e)
-
-                        # 登録
-                        bt.objects.create(
-                            title        = title,
-                            torrent_link = link,
-                            img_link     = hentai_cover_url,
-                            adult_flg    = True,
-                        )
-         # Web Scraping
+        # Web Scraping(同人誌)
         url = appconst.SUKEBEI_DOUJIN_URL
+        download.common_sukebei_webscrapping(url)
+
+        # Web Scraping(成年コミック)
+        url = appconst.SUKEBEI_URL
+        download.common_sukebei_webscrapping(url)
+
+    # Webscrapping
+    def common_sukebei_webscrapping(url):
         html = utils.WebScraping(url)
         for item in re.split('<item>', str(html)):
             title = re.search('<title>.*</title>', item).group().replace('<title>', '').replace('</title>', '')
@@ -84,9 +63,9 @@ class download:
                     nyaa_content = re.search('.*https://sukebei.nyaa.si/view/.*', item)
                     if nyaa_content:
                         nyaa_content = nyaa_content.group()
-                        hentai_cover_url = ''
                         nyaa_content = re.split('<',re.split('>', nyaa_content)[1])[0]
                         hentai_html = utils.WebScraping(nyaa_content)
+                        hentai_cover_url = ''
                         hentai_cover_url = re.search('.*https://hentai-covers.site/image/.*', str(hentai_html))
                         if hentai_cover_url:
                             try:
@@ -127,6 +106,36 @@ class download:
                     )
         except Exception as e:
             print(e)
+
+    def newSearchTorrent(genrue_id):
+        try:
+            for s in Series.objects.\
+                prefetch_related('info').exclude(info__book=None).filter(info__genrue_id=genrue_id, status=0).\
+                    annotate(m_slug=Max('slug'), keyword=Max('nyaa_keyword'), dtConfirm=Max('confirm_date')).\
+                        values('m_slug','keyword', 'dtConfirm').\
+                            order_by('dtConfirm')[:10]:
+                # 確認日更新
+                series = ss.getObject(s["m_slug"])
+                
+                # ダウンロードリストを更新
+                if genrue_id <= appconst.NOVEL:
+                    scraping(s['keyword'], appconst.BOOK_SEARCH_URL, appconst.BOOK_DL_URL, series)
+                else:
+                    scraping(f"[{s['keyword']}]", appconst.SUKEBEI_SEARCH_URL, appconst.ADULT_DL_URL, series)
+                print(f'{s["m_slug"]} {s["dtConfirm"]}')
+        except Exception as e:
+            print(e)
+
+    def SeriesDownlaod(genrue_id):
+        dt1 = datetime.datetime.now()
+        dt2 = dt1 + datetime.timedelta(days=-1)
+        model = Series.objects.filter(confirm_date__gt = dt2).\
+            prefetch_related('info').exclude(info__book=None).filter(info__genrue_id=genrue_id, status=0).\
+                filter(torrent__downloaded=False, torrent__regist_date__gt=dt2).\
+                    values('series_name','torrent__title','torrent__torrent_link', 'info__id','torrent__regist_date').\
+                        order_by('series_name','torrent__regist_date')
+
+        return model
 
 # 取得
 def retriveTorrentAdult():
@@ -177,7 +186,7 @@ def updAnimeTorrent(pk):
     anime.save() 
 # Torrentファイルのダウンロード
 def downloadTorrentFile(link, text):
-    title = text + '.torrent'
+    title = fr"{utils.escape(text)}.torrent"
     request.urlretrieve(link, appconst.FOLDER_DOWNLOAD + title)
 # ダウンロード済み更新（Book）
 def updBookTorrent(pk):

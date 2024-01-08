@@ -141,17 +141,18 @@ def author_list(request):
     }
     return render(request, 'master/author_list.html', params)
 # 編集
-def author_edit(request, author_id):
-    author=sau.get(author_id)
+def author_edit(request, id):
+    author=sau.get(id)
     form = AuthorForm(instance=author)
     if 'save' in request.POST:
         sau.master.update(
             form,
             request.POST['author_name'],
+            request.POST.get('kana'),
         )
         return redirect('author_list')
     elif 'delete' in request.POST:
-        sau.master.delete(author_id)
+        sau.master.delete(id)
         return redirect('author_list')
     params={ 'form' : form }
     return render(request, 'master/author_edit.html', params)
@@ -192,7 +193,7 @@ def info_edit(request, book_id):
         )
         return redirect('info_list')
     elif 'delete' in request.POST:
-        si.delete(book_id)
+        si.delete(id)
         return redirect('info_list')
     params={ 'form' : form }
     return render(request, 'master/info_edit.html', params)

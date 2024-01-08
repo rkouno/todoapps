@@ -37,8 +37,9 @@ class book_util:
     
     def get_title(genrue_id, title):
         title = title.replace('\'','''''')
-        sql = "SELECT * FROM BOOK_INFO WHERE '%%%s%%' LIKE '%%' || TITLE || '%%' || SUB_TITLE || '%%' AND (%s = 0 OR GENRUE_ID = %s) AND SUB_TITLE <> ''" % (str(title), genrue_id, genrue_id)
-        bi = si.rawObjects(sql )
+        # sql = "SELECT * FROM BOOK_INFO WHERE '%%%s%%' LIKE '%%' || TITLE || '%%' || SUB_TITLE || '%%' AND (%s = 0 OR GENRUE_ID = %s) AND SUB_TITLE <> ''" % (str(title), genrue_id, genrue_id)
+        param = {'title' : str(title), 'genrue_id' : genrue_id}
+        bi = si.rawObjects("SELECT * FROM BOOK_INFO WHERE '%%' || %(title)s || '%%' LIKE '%%' || TITLE || '%%' || SUB_TITLE || '%%' AND (%(genrue_id)s = 0 OR GENRUE_ID = %(genrue_id)s) AND SUB_TITLE <> ''", param)
         if bi:
             str_len = len(title)
             for inf in bi:
@@ -49,8 +50,9 @@ class book_util:
                     res_sub_title = inf.sub_title
 
             return (res_genrue_id, res_title, res_sub_title, 'Edit')
-        sql = "SELECT * FROM BOOK_INFO WHERE '%%%s%%' LIKE '%%' || TITLE || '%%' || SUB_TITLE || '%%' AND (%s = 0 OR GENRUE_ID = %s) " % (title, genrue_id, genrue_id)
-        bi = si.rawObjects(sql)
+        param = {'title' : title, 'genrue_id' : genrue_id}
+        sql = "SELECT * FROM BOOK_INFO WHERE '%%' || %(title)s || '%%' LIKE '%%' || TITLE || '%%' || SUB_TITLE || '%%' AND (%(genrue_id)s = 0 OR GENRUE_ID = %(genrue_id)s) "
+        bi = si.rawObjects(sql, param)
         if bi:
             str_len = len(title)
             res_genrue_id=1
@@ -70,8 +72,9 @@ class book_util:
 
     def get_author(str):
         str = str.replace('\'','''''')
-        sql = "SELECT * FROM BOOK_AUTHOR WHERE '%%%s%%' LIKE '%%' || AUTHOR_NAME || '%%' AND AUTHOR_NAME <> '' " % (str)
-        authors = sa.rawObjects(sql)
+        sql = "SELECT * FROM BOOK_AUTHOR WHERE '%%' || %(str)s || '%%' LIKE '%%' || AUTHOR_NAME || '%%' AND AUTHOR_NAME <> '' "
+        param = {'str' : str}
+        authors = sa.rawObjects(sql, param)
         if authors:
             return authors[0].author_name
         else:
@@ -81,7 +84,7 @@ class book_util:
         filter = Q(author_name=author_name)
         authors = sa.searchAuthor(filter)
         if authors:
-            return authors.first().author_id
+            return authors.first().id
         else:
             return 0
 
@@ -128,17 +131,13 @@ class book_util:
         
         if not bi:
             return 0
-        return bi.book_id
+        return bi.id
 
     def create_pdf(img_path, pdf_path):
         img_list = []
         for file in os.listdir(img_path):
             extention = os.path.splitext(file)[1]
-            if ".jpg" == extention:
-                img_list.append(f'{img_path}/{file}')
-            elif ".png" == extention:
-                img_list.append(f'{img_path}/{file}')
-            elif ".jpeg" == extention:
+            if extention in appconst.EXTENTION_IMAGE:
                 img_list.append(f'{img_path}/{file}')
         
         img_list = sorted(img_list, key=utils.natural_keys)

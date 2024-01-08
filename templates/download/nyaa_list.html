@@ -23,18 +23,18 @@
                 <a href="{% url 'nyaa_webscrap' %}" class="btn btn-success" onclick="spiners(this)">Web scraping</a>
             </p>
             <!-- Book downloade list -->
-            <table class="table table-sm table-striped">
+            <table class="table table-sm table-striped table-gradation">
                 <thread class="sticke-top table-dark">
                     <tr>
-                        <th>book downloaded title</th>
                         <th>regist date</th>
+                        <th>book downloaded title</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for torrent in torrents %}
-                    <tr>
+                    <tr class="gradation">
+                        <td class="gradation-key">{{ torrent.regist_date|date:"y/m/d" }}</td>
                         <td><a href="{% url 'nyaa_download' pk=torrent.torrent_link %}">{{ torrent.title }}</a></td>
-                        <td>{{ torrent.regist_date|date:"y/m/d" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

@@ -22,8 +22,10 @@
             <form method="POST">
                 {% csrf_token %}
                 <div class="row mb-3">
-                    <div class="col-sm-5"><input type="text" name="txtSearch" value="{{ request.session.txtSearch }}" class="form-control" /></div>
-                    <div class="col-sm-2"><button type="submit" name="search" class="btn btn-success">search</button></div>
+                    <div class="col-sm-5"><input type="text" name="txtSearch" value="{{ request.session.txtSearch }}"
+                            class="form-control" /></div>
+                    <div class="col-sm-2"><button type="submit" name="search" class="btn btn-success">search</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -33,12 +35,18 @@
                 <thread class="sticke-top table-dark" style="z-index:1">
                     <tr>
                         <th>author_name</th>
+                        <th>series</th>
+                        <th>last volume</th>
                     </tr>
                 </thread>
                 <tbody>
                     {% for model in models %}
                     <tr>
-                        <td><a href="{% url 'author_edit' model.author_id %}" >{{ model.author_name }}</a></td>
+                        <td>
+                            <a href="{% url 'author_edit' model.author_id %}"> {{ model.story_by }} </a>
+                        </td>
+                        <td>{{ model.series }}</td>
+                        <td>{{ model.maxVol}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -48,13 +56,13 @@
 </div>
 <script>
     $(document).ready(function () {
-        var author=''
-        $('table tbody tr').each(function(i,element){
-            if($(element).find('a').length > 0){
-                if(author ==  $(element).find('a')[0].innerText){
+        var author = ''
+        $('table tbody tr').each(function (i, element) {
+            if ($(element).find('a').length > 0) {
+                if (author == $(element).find('a')[0].innerText) {
                     $(element).css('background-color', '#A4C6FF')
                 } else {
-                    author=$(element).find('a')[0].innerText;
+                    author = $(element).find('a')[0].innerText;
                 }
             }
         });

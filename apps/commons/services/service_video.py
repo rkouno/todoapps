@@ -64,65 +64,62 @@ def moveVideo():
 
 # ビデオ登録
 def registVideo(tag, unwatched_path, watched_path):
-    try:
-        # 処理
+    # 処理
+    if appconst.VIDEO in tag:
+        for video in Video.objects.filter(process__exact='delete'):
+            # ファイル削除
+            utils.fileDelete(video.path)
+            video.delete()
+        for video in Video.objects.filter(process__exact='move'):
+            # ファイル移動
+            utils.fileMove(video.path, watched_path)
+            video.delete()
+        # 削除
+        Video.objects.update(process='delete')
+    elif appconst.HENTAI in tag:
+        for adult in Adult.objects.filter(process__exact='delete'):
+            # ファイル削除
+            utils.fileDelete(adult.path)
+            adult.delete()
+        for adult in Adult.objects.filter(process__exact='move'):
+            # ファイル移動
+            utils.fileMove(adult.path, watched_path)
+            adult.delete()
+        # 削除
+        Adult.objects.update(process='delete')
+
+    # ビデオの登録
+    videoFiles = utils.getFiles(unwatched_path, appconst.EXTENTION_VIDEO)
+    for file in videoFiles:
+        movies = ''
         if appconst.VIDEO in tag:
-            for video in Video.objects.filter(process__exact='delete'):
-                # ファイル削除
-                utils.fileDelete(video.path)
-                video.delete()
-            for video in Video.objects.filter(process__exact='move'):
-                # ファイル移動
-                utils.fileMove(video.path, watched_path)
-                video.delete()
-            # 削除
-            Video.objects.update(process='delete')
+            movies = Video.objects.filter(path__iexact=file).first()
         elif appconst.HENTAI in tag:
-            for adult in Adult.objects.filter(process__exact='delete'):
-                # ファイル削除
-                utils.fileDelete(adult.path)
-                adult.delete()
-            for adult in Adult.objects.filter(process__exact='move'):
-                # ファイル移動
-                utils.fileMove(adult.path, watched_path)
-                adult.delete()
-            # 削除
-            Adult.objects.update(process='delete')
-
-        # ビデオの登録
-        videoFiles = utils.getFiles(unwatched_path, appconst.EXTENTION_VIDEO)
-        for file in videoFiles:
-            movies = ''
-            if appconst.VIDEO in tag:
-                movies = Video.objects.filter(path__iexact=file).first()
-            elif appconst.HENTAI in tag:
-                movies = Adult.objects.filter(path=file).first()
-            
-            if movies:
-                # 既存
-                movies.process = None
-                movies.save()
+            movies = Adult.objects.filter(path=file).first()
+        
+        if movies:
+            # 既存
+            movies.process = None
+            movies.save()
+        else:
+            # 新規
+            title = utils.getFileName(file)
+            url = file.replace(appconst.FOLDER_MEDIA, appconst.VIDEO_URL)
+            url = url.replace(title,urllib.parse.quote(title))
+            episode = utils.getRegex(file, '- \d\d').replace('-', '').strip()
+            if episode == '':
+                episode = 0
+            group = Anime.objects.filter(keyword__icontains = title.split(' - ')[0]).first()
+            if group:
+                group = group
             else:
-                # 新規
-                title = utils.getFileName(file)
-                url = file.replace(appconst.FOLDER_MEDIA, appconst.VIDEO_URL)
-                url = url.replace(title,urllib.parse.quote(title))
-                episode = utils.getRegex(file, '- \d\d').replace('-', '').strip()
-                if episode == '':
-                    episode = 0
-                group = Anime.objects.filter(keyword__icontains = title.split(' - ')[0]).first()
-                if group:
-                    group = group
-                else:
-                    group = Anime.objects.get(pk=1)
+                group = Anime.objects.get(pk=1)
 
-                # 登録
-                if appconst.VIDEO in tag:
-                    Video.objects.create(title = title, path = file, episode = episode, url = url, group = group)
-                elif tag in appconst.HENTAI:
-                    Adult.objects.create(title = title, path = file, episode = episode, url = url, group = title)
-    except Exception as e:
-        print(e)
+            # 登録
+            if appconst.VIDEO in tag:
+                Video.objects.create(title = title, path = file, episode = episode, url = url, group = group)
+            elif tag in appconst.HENTAI:
+                Adult.objects.create(title = title, path = file, episode = episode, url = url, group = title)
 
 # 処理フラグ更新
 def updateProcess(tag, id, process):

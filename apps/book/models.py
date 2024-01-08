@@ -3,6 +3,8 @@ from django.utils import timezone
 from django.utils.text import slugify
 import pykakasi
 
+from apps.anime.models import Category
+
 # ジャンル
 class Genrue(models.Model):
     genrue_id   = models.IntegerField(primary_key=True, verbose_name='ジャンルID')
@@ -35,11 +37,17 @@ class Series(models.Model):
             kks = pykakasi.kakasi()
             self.slug = slugify(''.join([item['hepburn'] for item in kks.convert(self.series_name)]))
         return super().save(*args, **kwargs)
-    
+
+class Kana(models.Model):
+    kana  = models.CharField(max_length=2, blank=False, null=False, verbose_name='読み仮名')
+
+    def __str__(self):
+        return self.kana
+
 # 作者
 class Author(models.Model):
-    author_id      = models.IntegerField(primary_key=True, verbose_name='作者ID')
-    author_name    = models.CharField(max_length=100, verbose_name='作者名')
+    author_name = models.CharField(max_length=100, verbose_name='作者名')
+    kana        = models.ForeignKey(Kana, blank=True,  null=True, on_delete=models.CASCADE, verbose_name='読み仮名') 
 
     def __str__(self):
         return self.author_name
@@ -53,7 +61,6 @@ class Path(models.Model):
 
 # 書籍情報
 class Info(models.Model):
-    book_id     = models.IntegerField(primary_key=True, verbose_name='書籍ID')
     genrue      = models.ForeignKey(Genrue, on_delete=models.CASCADE, verbose_name='ジャンル')
     story_by    = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='story_by_id', verbose_name='原作者')
     art_by      = models.ForeignKey(Author, on_delete=models.CASCADE, blank=True, null=True, related_name='art_by_id', verbose_name='作画')
@@ -67,13 +74,14 @@ class Info(models.Model):
 class Book(models.Model):
     genrue      = models.ForeignKey(Genrue, on_delete=models.CASCADE, verbose_name='ジャンル')
     book        = models.ForeignKey(Info, on_delete=models.CASCADE, verbose_name='書籍情報', related_name='book')
+    volume      = models.CharField(max_length=5, blank=True, null=True, verbose_name='巻数')
     book_name   = models.CharField(max_length=255, verbose_name='書籍名')
     file_path   = models.CharField(primary_key=True, max_length=255, verbose_name='ファイルパス')
-    volume      = models.CharField(max_length=3, blank=True, null=True, verbose_name='巻数')
+    slug        = models.SlugField(unique=True, max_length=255)
+    isPdf       = models.BooleanField(default=True, verbose_name='拡張子')
     read_flg    = models.BooleanField(default=False, verbose_name='既読フラグ')
     regist_date = models.DateTimeField(default=timezone.now, verbose_name='登録日')
-    isPdf       = models.BooleanField(default=True)
-    slug        = models.SlugField(unique=True, max_length=255)
+    category    = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True, verbose_name='カテゴリー')
    
     def __str__(self):
         return self.book_name

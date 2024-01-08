@@ -2,6 +2,7 @@
 
 {% load static %}
 {% block content %}
+
 <!-- Error Message -->
 {% if messages %}
 <div class="card">
@@ -9,7 +10,7 @@
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="bi bi-exclamation-octagon me-1"></i>
             {% for message in messages %}
-            {{ message }}
+            {{message}}
             {% endfor %}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -21,89 +22,163 @@
 <div class="card">
     <div class="card-body">
         <div class="row">
-            {% if comics or novels %}
-            <!-- 戻るボタン -->
-            <div class="col">
-                <p>
-                    <a href="{% url 'book_general' request.session.sort %}" class="save btn btn btn-outline-dark">back</a>
-                    <a href="{% url 'book_series_edit' series.slug %}" class="save btn btn btn-outline-success">series</a>
-                </p>
-            </div>
-            <!--# 戻るボタン -->
-            {% elif adults %}
-            <!-- 戻るボタン -->
-            <div class="col">
-                <p>
-                    <a href="{% url 'book_hentai' request.session.sort %}" class="save btn btn btn-outline-dark">back</a>
-                </p>
-            </div>
-            <!--# 戻るボタン -->
-            {% else %}
-            <!-- 検索 -->
-            <div class="col-10">
-                    <form method="POST">
-                    {% csrf_token %}
-                    <div class="row mb-3">
-                        <div class="col-sm-6"><input type="text" name="txtSearch" value="{{ request.session.txtSearch }}" class="form-control" /></div>
 
-                        <div class="col-sm-2">
-                            <select id="cbxStatus" name="cbxStatus" class="form-control">
-                                {% for key, value in cbxStatus.items %}
-                                <option value="{{ key }}" >{{ value }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-sm-2">
-                            <select id="cbxRead" name="cbxRead" class="form-control">
-                                <option value="" >全て</option>
-                                {% for key, value in cbxRead.items %}
-                                <option value="{{ key }}" >{{ value }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-sm-2"><button type="submit" id="search" name="search" class="btn btn-success">search</button></div>
-                    </div>
-                </form>
-            </div>
-            <div class="col-2">
-                <p class="d-flex justify-content-end">
-                    {% if 'general' in request.path %}
-                    <a href="{% url 'book_general' 0 %}" class="save btn btn-outline-dark"><i class="bi bi-clock-fill"></i></a>
-                    <a href="{% url 'book_general' 1 %}" class="save btn btn-outline-dark"><i class="bi bi-sort-alpha-up-alt"></i></a>
-                    <a href="{% url 'book_general' 2 %}" class="save btn btn-outline-dark"><i class="bi bi-list-ul"></i></a>
-                    {% else%}
-                    <a href="{% url 'book_hentai' 0 %}" class="save btn btn-outline-dark"><i class="bi bi-clock-fill"></i></a>
-                    <a href="{% url 'book_hentai' 1 %}" class="save btn btn-outline-dark"><i class="bi bi-sort-alpha-up-alt"></i></a>
-                    <a href="{% url 'book_hentai' 2 %}" class="save btn btn-outline-dark"><i class="bi bi-list-ul"></i></a>
+            <!-- 戻る/シリーズボタン -->
+            {% if 'book' not in alias %}
+            <div class="col">
+                <p>
+                    <a href="{% url 'book_general' request.session.sort %}"
+                        class="save btn btn btn-outline-dark">back</a>
+                    {% if comics or novels %}
+                    <a href="{% url 'book_series_edit' series.slug %}"
+                        class="save btn btn btn-outline-success">series</a>
+                    <a href="{% url 'book_zip' series.slug %}" class="save btn btn btn-outline-warning">zip</a>
                     {% endif %}
                 </p>
             </div>
-            <!-- #検索 -->
             {% endif %}
-        </div>
-        <!-- シリーズ一覧 -->
-        {% if models %}
-        <div class="row">
-            <div class="col-12">
-                <!-- 一覧 -->
-                <table class="table table-striped table-hober table-condensed table-sm">
-                    <thread class="sticke-top table-dark" style="z-index:1">
-                        <tr>
-                            <th>book_name</th>
-                            <th></th>
-                            <th></th>
-                            <th>最終確認日</th>
-                            <th>最終DL日</th>
+            <!--# 戻る/シリーズボタン -->
+
+            <!-- 検索 -->
+            {% if 'book' in alias %}
+            <div class="row mb-3">
+                <div class="col-12">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row">
+                            <!-- 検索ボックス -->
+                            <div class="col-3 col-sm-3 col-md-5">
+                                <input type="text" name="txtSearch" value="{{request.session.txtSearch}}"
+                                    class="form-control" />
+                            </div>
+                            <!-- #検索ボックス -->
+
+                            <!-- ジャンル -->
+                            {% if cbxGenrue %}
+                            <div class="col-2 col-sm-3 col-md-2">
+                                <select id="cbxGenrue" name="cbxGenrue" class="form-control">
+                                    {% for key,item in cbxGenrue.items %}
+                                    {% if key in request.session.cbxGenrue %}
+                                    <option value="{{key}}" selected>{{item}}
+                                    </option>
+                                    {% else %}
+                                    <option value="{{key}}"> {{item}} </option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                            <!-- #ジャンル -->
+
+                            <!-- カテゴリー -->
+                            {% if cbxCategory %}
+                            <div class="col-2 col-sm-2 col-md-2">
+                                <select id="cbxCategory" name="cbxCategory" class="form-control">
+                                    {% for item in cbxCategory %}
+                                    {% if key in request.session.cbxCategory %}
+                                    <option value="{{item}}" selected>{{item}}</option>
+                                    {% else %}
+                                    <option value="{{item}}">{{item}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                            <!-- #カテゴリー -->
+
+                            <!-- ステータス -->
+                            {% if cbxStatus %}
+                            <div class="col-2 col-sm-2 col-md-1">
+                                <select id="cbxStatus" name="cbxStatus" class="form-control">
+                                    {% for key,item in cbxStatus.items %}
+                                    {% if item.status_id in request.session.cbxStatus %}
+                                    <option value="{{key}}" selected>{{item}}</option>
+                                    {% else %}
+                                    <option value="{{key}}">{{item}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                            <!-- #ステータス -->
+
+                            <!-- 未読・既読 -->
+                            <div class="col-1 col-sm-2 col-md-1">
+                                <select id="cbxRead" name="cbxRead" class="form-control">
+                                    <option value="">全て</option>
+                                    {% for key, value in cbxRead.items %}
+                                    {% if key in request.session.cbxRead %}
+                                    <option value="{{key}}" selected>{{value}}</option>
+                                    {% else %}
+                                    <option value="{{key}}">{{value}}</option>
+                                    {% endif %}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- #未読・既読 -->
+
+                            <!-- 検索ボタン -->
+                            <div class="col-1 col-sm-1 col-md-1">
+                                <button type="submit" id="search" name="search" class="btn btn-success"
+                                    onclick="">search</button>
+                            </div>
+                            <!-- #検索ボタン -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            <!-- #検索 -->
+
+            <!-- シリーズ一覧 -->
+            {% if models %}
+            <div class="row">
+                <div class="col-12">
+                    <!-- 一覧 -->
+                    <table class="table table-striped table-hober table-condensed table-sm">
+                        <thread class="sticke-top table-dark" style="z-index:1">
+                            <tr>
+                                <th>
+                                    {% if 11 == request.session.sort %}
+                                    <a href="{% url 'book_general' 10 %}">book_name</a>
+                                    {% else %}
+                                    <a href="{% url 'book_general' 11 %}">book_name</a>
+                                    {% endif %}
+                                </th>
+                                <th>last Volume</th>
+                                <th></th>
+                                <th>
+                                    {% if 21 == request.session.sort %}
+                                    <a href="{% url 'book_general' 20 %}">status</a>
+                                    {% else %}
+                                    <a href="{% url 'book_general' 21 %}">status</a>
+                                    {% endif %}
+                                </th>
+                                <th>
+                                    {% if 31 == request.session.sort %}
+                                    <a href="{% url 'book_general' 30 %}">last confirm date</a>
+                                    {% else %}
+                                    <a href="{% url 'book_general' 31 %}">last confirm date</a>
+                                    {% endif %}
+                                </th>
+                                <th>
+                                    {% if 41 == request.session.sort %}
+                                    <a href="{% url 'book_general' 40 %}">last download date</a>
+                                    {% else %}
+                                    <a href="{% url 'book_general' 41 %}">last download date</a>
+                                    {% endif %}
+                                </th>
                             </tr>
                         </thread>
                         <tbody>
                             {% for model in models %}
                             <tr>
-                                <td><a href="{% url 'book_series' model.maxslug %}">{{ model.series }}</a></td>
-                                <td><input type="hidden" name="ReadFlg" value="{{ model.read_flg }}"></td>
-                                <td>{{ model.maxStatus }}</td>
-                                <td>{{ model.dtConfirm | date:"y/m/d" }}</td>
-                                <td>{{ model.dtLast | date:"y/m/d H:i:s" }}</td>
+                                <td><a href="{% url 'book_series' model.maxslug %}">{{model.series}} </a></td>
+                                <td>{{ model.maxVol }}</td>
+                                <td><input type="hidden" name="ReadFlg" value="{{model.read_flg}}"></td>
+                                <td>{{model.maxStatus}}</td>
+                                <td>{{model.dtConfirm | date:"y/m/d"}}</td>
+                                <td>{{model.dtLast | date:"y/m/d H:i:s"}}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -114,35 +189,49 @@
                         <ul class="pagination">
                             <!-- 前のページ -->
                             {% if models.has_previous %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ models.previous_page_number }}"><<</a></li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?page={{models.previous_page_number}}">Previous</a></li>
                             {% else %}
-                            <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#"><<</div></li>
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Previous</div>
+                            </li>
                             {% endif %}
                             <!-- #前のページ -->
-                            
+
                             <!-- ページ番号 -->
                             {% if models.has_previous %}
                             {% if models.previous_page_number != 1 %}
                             <li><a class="page-link text-primary d-inline-block" href="?page=1">1</a></li>
                             <li>…</li>
                             {% endif %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ models.previous_page_number }}">{{ models.previous_page_number}}</a></li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?page={{models.previous_page_number}}">{{models.previous_page_number}}</a>
+                            </li>
                             {% endif %}
-                            <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">{{ models.number}}</div></li>
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">{{models.number}}
+                                </div>
+                            </li>
                             {% if models.has_next %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ models.next_page_number }}">{{models.next_page_number }}</a></li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?page={{models.next_page_number}}">{{models.next_page_number}}</a></li>
                             {% if models.next_page_number != models.paginator.num_pages %}
                             <li>…</li>
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ models.paginator.num_pages }}">{{models.paginator.num_pages }}</a></li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?page={{models.paginator.num_pages}}">{{models.paginator.num_pages}}</a>
+                            </li>
                             {% endif %}
                             {% endif %}
                             <!-- #ページ番号 -->
-                            
+
                             <!-- 次のページ -->
                             {% if models.has_next %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ models.next_page_number }}">>></a></li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?page={{models.next_page_number}}">Next</a></li>
                             {% else %}
-                            <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">>></div></li>
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Next</div>
+                            </li>
                             {% endif %}
                             <!-- #次のページ -->
                         </ul>
@@ -152,6 +241,7 @@
             </div>
             {% endif %}
             <!-- #シリーズ一覧 -->
+
             <div class="row">
                 <!-- コミック一覧 -->
                 {% if comics %}
@@ -166,271 +256,342 @@
                                 <th></th>
                             </tr>
                         </thread>
+
                         <tbody>
                             {% for model in comics %}
                             <tr>
-                                <td><a href="{% url 'book_download' model.slug %}">{{ model.book_name }}</a></td>
+                                <td><a href="{% url 'book_download' model.slug %}">{{model.book_name}}</a></td>
                                 {% if model.isPdf %}
                                 <td><a class="btn btn-sm btn-danger rounded-pill">PDF</a></td>
                                 {% else %}
+
                                 <td><a class="btn btn-sm btn-primary rounded-pill">EUPB</a></td>
                                 {% endif %}
-                                <td><input type="hidden" name="ReadFlg" value="{{ model.read_flg }}"></td>
-                                <td><a href="{% url 'book_edit' model.slug %}" class="btn btn-sm btn-success">Edit</a></td>
+                                <td><input type="hidden" name="ReadFlg" value="{{model.read_flg}}"></td>
+                                <td><a href="{% url 'book_edit' model.slug %}" class="btn btn-sm btn-success">Edit</a>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                     <!-- #一覧 -->
+
                     <!-- ページネーション -->
                     <nav aria-label="Page navigation">
                         <ul class="pagination">
                             <!-- 前のページ -->
                             {% if comics.has_previous %}
-                            <li><a class="page-link text-primary d-inline-block" href="?comic={{ comics.previous_page_number }}"><<</a></li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?comic={{comics.previous_page_number}}">Previous</a></li>
                             {% else %}
-                            <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#"><<</div></li>
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Previous</div>
+                            </li>
                             {% endif %}
                             <!-- #前のページ -->
-                            
+
                             <!-- ページ番号 -->
                             {% if comics.has_previous %}
                             {% if comics.previous_page_number != 1 %}
-                            <li><a class="page-link text-primary d-inline-block" href="?comics=1">1</a></li><li>…</li>
+                            <li><a class="page-link text-primary d-inline-block" href="?comics=1">1</a></li>
+                            <li>…</li>
                             {% endif %}
                             <li><a class="page-link text-primary d-inline-block"
-                                href="?comic={{ comics.previous_page_number }}">{{ comics.previous_page_number}}</a></li>
-                                {% endif %}
-                                <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">{{ comics.number}}</div></li>
-                                {% if comics.has_next %}
-                                <li><a class="page-link text-primary d-inline-block" href="?comic={{ comics.next_page_number }}">{{comics.next_page_number }}</a></li>
-                                {% if comics.next_page_number != comics.paginator.num_pages %}
-                                <li>…</li>
-                                <li><a class="page-link text-primary d-inline-block" href="?comic={{ comics.paginator.num_pages }}">{{comics.paginator.num_pages }}</a></li>
-                                {% endif %}
-                                {% endif %}
-                                <!-- #ページ番号 -->
-                                
-                                <!-- 次のページ -->
-                                {% if comics.has_next %}
-                                <li><a class="page-link text-primary d-inline-block" href="?comic={{ comics.next_page_number }}">>></a></li>
-                                {% else %}
-                                <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">>></div></li>
-                                {% endif %}
-                                <!-- #次のページ -->
-                            </ul>
-                        </nav>
-                        <!-- #ページネーション -->
-                    </div>
-                    {% endif %}
-                    <!-- #コミック一覧 -->
-                    
-                    <!-- 小説一覧 -->
-                    {% if novels %}
-                    <div class="row_col">
-                        <!-- 一覧 -->
-                        <table class="table table-striped table-hober table-condensed table-sm">
-                            <thread class="sticke-top table-dark" style="z-index:1">
-                                <tr>
-                                    <th>novel</th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                </tr>
-                            </thread>
-                            <tbody>
-                                {% for model in novels %}
-                                <tr>
-                                    <td><a href="{% url 'book_download' model.slug %}">{{ model.book_name }}</a></td>
-                                    {% if model.isPdf %}
-                                    <td><a class="btn btn-sm btn-danger rounded-pill">PDF</a></td>
-                                    {% else %}
-                                    <td><a class="btn btn-sm btn-primary rounded-pill">EUPB</a></td>
-                                    {% endif %}
-                                    <td><input type="hidden" name="ReadFlg" value="{{ model.read_flg }}"></td>
-                                    <td><a href="{% url 'book_edit' model.slug %}" class="btn btn-sm btn-success">Edit</a></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        <!-- #一覧 -->
-                        <!-- ページネーション -->
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination">
-                                <!-- 前のページ -->
-                                {% if novels.has_previous %}
-                                <li><a class="page-link text-primary d-inline-block" href="?novel={{ novels.previous_page_number }}"><<</a></li>
-                                {% else %}
-                                <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#"><<</div></li>
-                                {% endif %}
-                                <!-- #前のページ -->
-                                
-                                <!-- ページ番号 -->
-                                {% if novels.has_previous %}
-                                {% if novels.previous_page_number != 1 %}
-                                <li><a class="page-link text-primary d-inline-block" href="?novel=1">1</a></li><li>…</li>
-                                {% endif %}
-                                <li><a class="page-link text-primary d-inline-block"
-                                    href="?novel={{ novels.previous_page_number }}">{{ novels.previous_page_number}}</a></li>
-                                    {% endif %}
-                                    <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">{{ novels.number}}</div></li>
-                                    {% if novels.has_next %}
-                                    <li><a class="page-link text-primary d-inline-block" href="?novel={{ novels.next_page_number }}">{{novels.next_page_number }}</a></li>
-                                    {% if novels.next_page_number != novels.paginator.num_pages %}
-                                    <li>…</li>
-                                    <li><a class="page-link text-primary d-inline-block" href="?novel={{ novels.paginator.num_pages }}">{{novels.paginator.num_pages }}</a></li>
-                                    {% endif %}
-                                    {% endif %}
-                                    <!-- #ページ番号 -->
-                                    
-                                    <!-- 次のページ -->
-                                    {% if novels.has_next %}
-                                    <li><a class="page-link text-primary d-inline-block" href="?novel={{ novels.next_page_number }}">>></a></li>
-                                    {% else %}
-                                    <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">>></div></li>
-                                    {% endif %}
-                                    <!-- #次のページ -->
-                                </ul>
-                            </nav>
-                            <!-- #ページネーション -->
-                        </div>
-                        {% endif %}
-                        <!-- #小説一覧 -->
-                        
-                        <!-- 成年コミック・成年小説一覧 -->
-                        {% if adults %}
-                        <div class="row_col">
-                            <!-- 一覧 -->
-                            <table class="table table-striped table-hober table-condensed table-sm">
-                                <thread class="sticke-top table-dark" style="z-index:1">
-                                    <tr>
-                                        <th>adult</th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </thread>
-                                <tbody>
-                                    {% for model in adults %}
-                                    <tr>
-                                        <td><a href="{% url 'book_download' model.slug %}">{{ model.book_name }}</a></td>
-                                        <td><input type="hidden" name="ReadFlg" value="{{ model.read_flg }}"></td>
-                                        <td><a href="{% url 'book_edit' model.slug %}" class="btn btn-sm btn-success">Edit</a></td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                            <!-- #一覧 -->
-                            <!-- ページネーション -->
-                            <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        <!-- 前のページ -->
-                        {% if adults.has_previous %}
-                        <li><a class="page-link text-primary d-inline-block" href="?adult={{ adults.previous_page_number }}"><<</a></li>
-                        {% else %}
-                        <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#"><<</div></li>
-                        {% endif %}
-                        <!-- #前のページ -->
-                        
-                        <!-- ページ番号 -->
-                        {% if adults.has_previous %}
-                        {% if adults.previous_page_number != 1 %}
-                        <li><a class="page-link text-primary d-inline-block" href="?adult=1">1</a></li><li>…</li>
-                        {% endif %}
-                        <li><a class="page-link text-primary d-inline-block"
-                            href="?adult={{ adults.previous_page_number }}">{{ adults.previous_page_number}}</a></li>
+                                    href="?comic={{comics.previous_page_number}}">{{comics.previous_page_number}}</a>
+                            </li>
                             {% endif %}
-                            <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">{{ adults.number}}</div></li>
-                            {% if adults.has_next %}
-                            <li><a class="page-link text-primary d-inline-block" href="?adult={{ adults.next_page_number }}">{{adults.next_page_number }}</a></li>
-                            {% if adults.next_page_number != adults.paginator.num_pages %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">{{comics.number}}
+                                </div>
+                            </li>
+                            {% if comics.has_next %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?comic={{comics.next_page_number}}">{{comics.next_page_number}}</a></li>
+                            {% if comics.next_page_number != comics.paginator.num_pages %}
                             <li>…</li>
-                            <li><a class="page-link text-primary d-inline-block" href="?adult={{ adults.paginator.num_pages }}">{{adults.paginator.num_pages }}</a></li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?comic={{comics.paginator.num_pages}}">{{comics.paginator.num_pages}}</a>
+                            </li>
                             {% endif %}
                             {% endif %}
                             <!-- #ページ番号 -->
-                            
+
                             <!-- 次のページ -->
-                            {% if adults.has_next %}
-                            <li><a class="page-link text-primary d-inline-block" href="?adult={{ adults.next_page_number }}">>></a></li>
+                            {% if comics.has_next %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?comic={{comics.next_page_number}}">Next</a></li>
                             {% else %}
-                            <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">>></div></li>
-                            {% endif %}
-                            <!-- #次のページ -->
-                        </ul>
-                </nav>
-                <!-- #ページネーション -->
-            </div>
-            {% endif %}
-            <!-- #成年コミック・成年小説一覧 -->
-            
-            <!-- トレントリスト -->
-            {% if torrents %}
-            <div class="col-12">
-                <table class="table table-striped table-hober table-condensed table-sm">
-                    <thread class="sticke-top table-dark" style="z-index:1">
-                        <tr>
-                            <th>download</th>
-                            <th>confirm date</th>
-                        </tr>
-                    </thread>
-                    <tbody>
-                        {% for torrent in torrents %}
-                        <tr>
-                            <td><a href="{% url 'book_nyaa' torrent.torrent_link %}">{{ torrent.title }}</a></td>
-                            <td>{{ torrent.regist_date | date:"y/m/d" }}</td>
-                        </tr>
-                        {% endfor%}
-                    </tbody>
-                </table>
-                <!-- ページネーション -->
-                <nav aria-label="Page navigation">
-                    <ul class="pagination">
-                        <!-- 前のページ -->
-                        {% if torrents.has_previous %}
-                        <li><a class="page-link text-primary d-inline-block" href="?torrent={{ torrents.previous_page_number }}"><<</a></li>
-                        {% else %}
-                        <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#"><<</div></li>
-                        {% endif %}
-                        <!-- #前のページ -->
-                        <!-- ページ番号 -->
-                        {% if torrents.has_previous %}
-                            {% if torrents.previous_page_number != 1 %}
-                            <li><a class="page-link text-primary d-inline-block" href="?torrent=1">1</a></li>
-                            <li>…</li>
-                            {% endif %}
-                            <li><a class="page-link text-primary d-inline-block" href="?torrent={{ torrents.previous_page_number }}">{{ torrents.previous_page_number}}</a></li>
-                            {% endif %}
-                            <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">{{ torrents.number}}</div></li>
-                            {% if torrents.has_next %}
-                            <li><a class="page-link text-primary d-inline-block" href="?torrent={{ torrents.next_page_number }}">{{torrents.next_page_number }}</a></li>
-                            {% if torrents.next_page_number != torrents.paginator.num_pages %}
-                            <li>…</li>
-                            <li><a class="page-link text-primary d-inline-block" href="?torrent={{ torrents.paginator.num_pages }}">{{torrents.paginator.num_pages }}</a></li>
-                            {% endif %}
-                            {% endif %}
-                            <!-- #ページ番号 -->
-                            
-                            <!-- 次のページ -->
-                            {% if torrents.has_next %}
-                            <li><a class="page-link text-primary d-inline-block" href="?torrent={{ torrents.next_page_number }}">>></a></li>
-                            {% else %}
-                            <li class="disabled"><div class="page-link text-secondary d-inline-block disabled" href="#">>></div></li>
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Next</div>
+                            </li>
                             {% endif %}
                             <!-- #次のページ -->
                         </ul>
                     </nav>
-                <!-- #ページネーション -->
+                    <!-- #ページネーション -->
+                </div>
+                {% endif %}
+                <!-- #コミック一覧 -->
+
+                <!-- 小説一覧 -->
+                {% if novels %}
+                <div class="row_col">
+                    <!-- 一覧 -->
+                    <table class="table table-striped table-hober table-condensed table-sm">
+                        <thread class="sticke-top table-dark" style="z-index:1">
+                            <tr>
+                                <th>novel</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thread>
+                        <tbody>
+                            {% for model in novels %}
+                            <tr>
+                                <td><a href="{% url 'book_download' model.slug %}">{{model.book_name}}</a></td>
+                                {% if model.isPdf %}
+                                <td><a class="btn btn-sm btn-danger rounded-pill">PDF</a></td>
+                                {% else %}
+                                <td><a class="btn btn-sm btn-primary rounded-pill">EUPB</a></td>
+                                {% endif %}
+                                <td><input type="hidden" name="ReadFlg" value="{{model.read_flg}}"></td>
+                                <td><a href="{% url 'book_edit' model.slug %}" class="btn btn-sm btn-success">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <!-- #一覧 -->
+
+                    <!-- ページネーション -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+
+                            <!-- 前のページ -->
+                            {% if novels.has_previous %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?novel={{novels.previous_page_number}}">Previous</a></li>
+                            {% else %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Previous</div>
+                            </li>
+                            {% endif %}
+                            <!-- #前のページ -->
+
+                            <!-- ページ番号 -->
+                            {% if novels.has_previous %}
+                            {% if novels.previous_page_number != 1 %}
+                            <li><a class="page-link text-primary d-inline-block" href="?novel=1">1</a></li>
+                            <li>…</li>
+                            {% endif %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?novel={{novels.previous_page_number}}">{{novels.previous_page_number}}</a>
+                            </li>
+                            {% endif %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">{{novels.number}}
+                                </div>
+                            </li>
+                            {% if novels.has_next %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?novel={{novels.next_page_number}}">{{novels.next_page_number}}</a></li>
+                            {% if novels.next_page_number != novels.paginator.num_pages %}
+                            <li>…</li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?novel={{novels.paginator.num_pages}}">{{novels.paginator.num_pages}}</a>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            <!-- #ページ番号 -->
+
+                            <!-- 次のページ -->
+                            {% if novels.has_next %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?novel={{novels.next_page_number}}">Next</a></li>
+                            {% else %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Next</div>
+                            </li>
+                            {% endif %}
+                            <!-- #次のページ -->
+                        </ul>
+                    </nav>
+                    <!-- #ページネーション -->
+                </div>
+                {% endif %}
+                <!-- #小説一覧 -->
+
+                <!-- 成年コミック・成年小説一覧 -->
+                {% if adults %}
+                <div class="row_col">
+
+                    <!-- 一覧 -->
+                    <table class="table table-striped table-hober table-condensed table-sm">
+                        <thread class="sticke-top table-dark" style="z-index:1">
+                            <tr>
+                                <th>adult</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thread>
+                        <tbody>
+                            {% for model in adults %}
+                            <tr>
+                                <td><a href="{% url 'book_download' model.slug %}">{{model.book_name}}</a></td>
+                                <td><input type="hidden" name="ReadFlg" value="{{model.read_flg}}"></td>
+                                <td><a href="{% url 'book_edit' model.slug %}" class="btn btn-sm btn-success">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <!-- #一覧 -->
+
+                    <!-- ページネーション -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <!-- 前のページ -->
+                            {% if adults.has_previous %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?adult={{adults.previous_page_number}}">Previous</a>
+                            </li>
+                            {% else %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Previous</div>
+                            </li>
+                            {% endif %}
+                            <!-- #前のページ -->
+
+                            <!-- ページ番号 -->
+                            {% if adults.has_previous %}
+                            {% if adults.previous_page_number != 1 %}
+                            <li><a class="page-link text-primary d-inline-block" href="?adult=1">1</a></li>
+                            <li>…</li>
+                            {% endif %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?adult={{adults.previous_page_number}}">{{adults.previous_page_number}}</a>
+                            </li>
+                            {% endif %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">{{adults.number}}
+                                </div>
+                            </li>
+                            {% if adults.has_next %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?adult={{adults.next_page_number}}">{{adults.next_page_number}}</a></li>
+                            {% if adults.next_page_number != adults.paginator.num_pages %}
+                            <li>…</li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?adult={{adults.paginator.num_pages}}">{{adults.paginator.num_pages}}</a>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            <!-- #ページ番号 -->
+
+                            <!-- 次のページ -->
+                            {% if adults.has_next %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?adult={{adults.next_page_number}}">>></a></li>
+                            {% else %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Next</div>
+                            </li>
+                            {% endif %}
+                            <!-- #次のページ -->
+                        </ul>
+                    </nav>
+                    <!-- #ページネーション -->
+                </div>
+                {% endif %}
+                <!-- #成年コミック・成年小説一覧 -->
+
+                <!-- トレントリスト -->
+                {% if torrents %}
+                <div class="col-12">
+                    <!-- 一覧 -->
+                    <table class="table table-striped table-hober table-condensed table-sm">
+                        <thread class="sticke-top table-dark" style="z-index:1">
+                            <tr>
+                                <th>download</th>
+                                <th>confirm date</th>
+                            </tr>
+                        </thread>
+                        <tbody>
+                            {% for torrent in torrents %}
+                            <tr>
+                                <td><a href="{% url 'book_nyaa' torrent.torrent_link %}">{{torrent.title}}</a></td>
+                                <td>{{torrent.regist_date | date:"y/m/d"}}</td>
+                            </tr>
+                            {% endfor%}
+                        </tbody>
+                    </table>
+                    <!-- #一覧 -->
+
+                    <!-- ページネーション -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+
+                            <!-- 前のページ -->
+                            {% if torrents.has_previous %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?torrent={{torrents.previous_page_number}}">Previous</a>
+                            </li>
+                            {% else %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Previous</div>
+                            </li>
+                            {% endif %}
+                            <!-- #前のページ -->
+
+                            <!-- ページ番号 -->
+                            {% if torrents.has_previous %}
+                            {% if torrents.previous_page_number != 1 %}
+                            <li><a class="page-link text-primary d-inline-block" href="?torrent=1">1</a></li>
+                            <li>…</li>
+                            {% endif %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?torrent={{torrents.previous_page_number}}">{{torrents.previous_page_number}}</a>
+                            </li>
+                            {% endif %}
+
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">
+                                    {{torrents.number}}</div>
+                            </li>
+
+                            {% if torrents.has_next %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?torrent={{torrents.next_page_number}}">{{torrents.next_page_number}}</a>
+                            </li>
+                            {% if torrents.next_page_number != torrents.paginator.num_pages %}
+                            <li>…</li>
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?torrent={{torrents.paginator.num_pages}}">{{torrents.paginator.num_pages}}</a>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            <!-- #ページ番号 -->
+
+                            <!-- 次のページ -->
+                            {% if torrents.has_next %}
+                            <li><a class="page-link text-primary d-inline-block"
+                                    href="?torrent={{torrents.next_page_number}}">Next</a></li>
+                            {% else %}
+                            <li class="disabled">
+                                <div class="page-link text-secondary d-inline-block disabled" href="#">Next</div>
+                            </li>
+                            {% endif %}
+                            <!-- #次のページ -->
+                        </ul>
+                    </nav>
+                    <!-- #ページネーション -->
+
+                </div>
+                {% endif %}
+                <!-- #トレントリスト -->
             </div>
-            {% endif %}
-            <!-- #トレントリスト -->
         </div>
-                        
     </div>
 </div>
-<script>
-    $('#cbxStatus,#cbxRead').on('change', function() {
-        console.log($(this).val());
-        $('#search').click();
-    });
-</script>
 {% endblock %}

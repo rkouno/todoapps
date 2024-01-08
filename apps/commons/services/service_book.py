@@ -15,6 +15,7 @@ from apps.commons.services import service_genrue   as sg
 
 #model
 from apps.book.models import Book 
+from apps.book.models import Series
 
 """
 編集
@@ -22,8 +23,8 @@ from apps.book.models import Book
 # シリーズの取得
 def retriveSeries(series_name, genrue_id):
     books = Book.objects.prefetch_related('book').filter(book_id__series_id=series_name,genrue_id=genrue_id).\
-        extra({'volume': "CAST(volume as INTEGER)"}).\
-            order_by('read_flg', 'book__title', 'book__sub_title', '-volume')
+        extra({'order_volume': "CAST(volume as NUMERIC)"}).\
+            order_by('read_flg', 'book__title', 'book__sub_title', '-order_volume')
     return books
 # 書籍の取得
 def retriveBook(pk):
@@ -35,9 +36,9 @@ def updateReadFlg(book):
     b.read_flg = True
     b.save()
 # 書籍情報の更新
-def book_update(pk, genrue_id, book_id, book_name, file_path, volume, slug):
+def book_update(pk, genrue_id, id, book_name, file_path, volume, slug):
     genrue = sg.getObject(genrue_id)
-    info = si.get(book_id)
+    info = si.get(id)
     Book.objects.update_or_create(
         file_path = pk,
         defaults={
@@ -66,8 +67,8 @@ def update(pk, book, genrue_id, story_by, art_by, title, sub_title, volume):
     info = si.info_commit(
         genrue_id, 
         series.series_name.strip(), 
-        story_by.author_id, 
-        art_by.author_id, 
+        story_by.id, 
+        art_by.id, 
         title.strip(), 
         sub_title.strip()
     )
@@ -88,7 +89,7 @@ def update(pk, book, genrue_id, story_by, art_by, title, sub_title, volume):
     sb.book_update(
         pk,
         genrue_id, 
-        info.book_id, 
+        info.id, 
         book_name.strip(), 
         file_path.strip(), 
         volume,
@@ -134,20 +135,34 @@ def arrange():
         # 存在しないシリーズの削除
         print(f"【削除】{s['series_name']}")
         ss.master.delete(s['series_name'])
+
+def zip(pk):
+    zip_folder =  Series.objects.filter(slug=pk).first().series_name
+
+    # フォルダにファイルを移動
+    for f in Book.objects.filter(book__series__series_name=zip_folder):
+        utils.moveToFolder(f.file_path, f"{appconst.FOLDER_BOOK_COMPLATE}{zip_folder}")
+
+    # 圧縮
+    # utils.zip(zip_folder)
+    
+    # 削除
+    Series.objects.filter(slug=pk).delete()
 """
 共通
 """
 # ジャンルID取得
-def getGenrue(book_id):
-    book = Book.objects.filter(book_id=book_id).first()
+def getGenrue(id):
+    book = Book.objects.filter(id=id).first()
     return book.genrue_id
 
-def update_or_create(genrue_id, book_id, book_name, file_path, volume):
-    bi = si.get(book_id)
+def update_or_create(genrue_id, id, book_name, file_path, volume):
+    bi = si.get(id)
     Book.objects.update_or_create(
         genrue    = sg.getObject(genrue_id),
         book      = bi,
         book_name = book_name.strip(),
         file_path = file_path.strip(),
         volume    = volume,
+        isPdf     = True if  'pdf' in file_path.strip() else False 
     )

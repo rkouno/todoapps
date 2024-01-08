@@ -3,7 +3,20 @@ $(document).ready(function () {
         $('#sidebar').toggleClass('active');
     });
 
-    // });
+    $('.table-gradation').each(function(i, item){
+        var text = '';
+        var rgb = 275;
+        $(item).find('.gradation').each(function(i, item){
+            var text_diff = $(item).find('.gradation-key').text();
+            if(text != text_diff){
+                rgb -= 20;
+                $(item).css('background-color', "rgb(" + rgb + "," + rgb + ", " + rgb + ")")
+                text = text_diff;
+            } else {
+                $(item).css('background-color', "rgb(" + rgb + "," + rgb + ", " + rgb + ")")
+            }
+        });
+    });
 
     // 背景色変更 
     // ----------------------------
@@ -24,7 +37,6 @@ $(document).ready(function () {
     $('input[name*=ExistFlg]').each(function (i, item) {
         console.log(item);
         if ($(item).val() == 'True' || $(item).val() == 1) {
-            // $(item).parent().parent().css('color', '#ff0000')
             $(item).closest('tr').css('font-weight', 'bold');
         }
     });

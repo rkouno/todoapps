@@ -23,15 +23,23 @@
                 <div class="d-flex">
                     <!-- 取得-->
                     <div class="mx-2 mb-2">
-                        <button type="submit" name="getList" class="btn btn-outline-primary" onclick="spiners(this)">get list</button>
+                        <button type="submit" name="getList" class="btn btn-outline-primary" onclick="spiners(this)">get
+                            list</button>
+                    </div>
+                    <!-- クリア -->
+                    <div class="mx-2 mb-2">
+                        <button type="submit" name="clear" class="btn btn-outline-secondary"
+                            onclick="spiners(this)">clear</button>
                     </div>
                     <!-- 設定 -->
                     <div class="mx-2 mb-2">
-                        <button type="submit" name="setting" class="btn btn-outline-success" onclick="spiners(this)">setting</button>
+                        <button type="submit" name="setting" class="btn btn-outline-success"
+                            onclick="spiners(this)">setting</button>
                     </div>
                     <!-- 実行 -->
                     <div class="mx-2 mb-2">
-                        <button type="submit" name="execute" class="btn btn-primary" onclick="spiners(this)">execute</button>
+                        <button type="submit" name="execute" class="btn btn-primary"
+                            onclick="spiners(this)">execute</button>
                     </div>
                 </div>
 
@@ -40,32 +48,40 @@
                     <div class="accordion" id="accordionFlushExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="flush-headingOne">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#flush-collapseOne" aria-expanded="false"
+                                    aria-controls="flush-collapseOne">
                                     Search Barnar
                                 </button>
                             </h2>
-                            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                            <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
                                 <div class="accordion-body">
                                     <!-- 検索 -->
                                     <div class="row mb-3">
-                                        <div class="col-sm-10"><input type="text" name="txtSearch" value="{{ request.session.txtSearch }}" class="form-control" /></div>
-                                        <div class="col-sm-2"><button type="submit" name="search" id="search" class="btn btn-success">search</button></div>
+                                        <div class="col-sm-10"><input type="text" name="txtSearch"
+                                                value="{{ request.session.txtSearch }}" class="form-control" /></div>
+                                        <div class="col-sm-2"><button type="submit" name="search" id="search"
+                                                class="btn btn-success">search</button></div>
                                     </div>
                                     <!-- #検索 -->
                                     <!-- 置換 -->
                                     <div class="row mb-2">
                                         <div class="col-sm-5">
-                                            <input type="text" name="txtReplace_b" class="form-control" />
-                                        </div>                        
+                                            <input type="text" id="txtReplace_b" name="txtReplace_b"
+                                                class="form-control" />
+                                        </div>
                                         <div class="col-sm-5">
-                                            <input type="text" name="txtReplace_a" class="form-control" />
+                                            <input type="text" id="txtReplace_a" name="txtReplace_a"
+                                                class="form-control" />
                                         </div>
                                         <div class="col-sm-2">
                                             <button type="submit" name="replace" class="btn-info btn">replace</button>
-                                        </div>                        
+                                        </div>
                                         <div class="mb-2 col-sm-4">
-                                            <input class="form-check-input" type="checkbox" name="isRegex" id="isRegex">
-                                            <label class="form-check-label" for="isRegex">正規表現で置換</label>
+                                            <input class="form-check-input" type="checkbox" name="isRegex" id="isRegex"
+                                                {{ request.session.isRegex }}>
+                                            <label class="form-check-label" for="isRegex" value=true>正規表現で置換</label>
                                         </div>
                                     </div>
                                     <!-- #置換 -->
@@ -77,115 +93,151 @@
                 <!-- スイッチ -->
                 <div class="d-flex mb-2">
                     <div class="mx-2 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="nonecheck" name="nonecheck" {{ request.session.nonecheck }}>
+                        <input class="form-check-input" type="checkbox" id="nonecheck" name="nonecheck" {{
+                            request.session.nonecheck }}>
                         <label class="form-check-label" for="nonecheck">None </label>
                     </div>
                     <div class="mx-2 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="newcheck" name="newcheck" {{ request.session.newcheck }}>
+                        <input class="form-check-input" type="checkbox" id="newcheck" name="newcheck" {{
+                            request.session.newcheck }}>
                         <label class="form-check-label" for="newcheck">既刊/新刊 </label>
                     </div>
                     <div class="mx-2 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="delcheck" name="delcheck" {{ request.session.delcheck }}>
+                        <input class="form-check-input" type="checkbox" id="delcheck" name="delcheck" {{
+                            request.session.delcheck }}>
                         <label class="form-check-label" for="delcheck">削除 </label>
                     </div>
                     <div class="mx-2 form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="createcheck" name="createcheck" {{ request.session.createcheck }}>
+                        <input class="form-check-input" type="checkbox" id="createcheck" name="createcheck" {{
+                            request.session.createcheck }}>
                         <label class="form-check-label" for="createcheck">作成 </label>
                     </div>
                 </div>
                 <!-- #スイッチ -->
             </form>
             <!-- #フォーム -->
-                <!-- 一覧 -->
-                <div class="row">
-                    <table class="table table-sm table-striped table-hober">
-                        <thead class="sticke-top table-dark">
-                            <th></th>
-                            <th>name</th>
-                            <th>book_name</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </thead>
-                        <tbody>
-                            {% for book in workbooks %}
-                            <tr>
-                                <td>
-                                    <div class="btn-group mo-3" role="group">
-                                        <a href="#" class="btn btn-sm text-nowrap btn-info" onclick="setProcess({{ book.id }}, 'Create')">create</a>
-                                        <a href="#" class="btn btn-sm text-nowrap btn-light" onclick="setProcess({{ book.id }}, 'Clear')">clear</a>
-                                        <a href="#" class="btn btn-sm text-nowrap btn-danger" onclick="setProcess({{ book.id }}, 'Delete')">delete</a>
-                                    </div>
-                                </td>
-                                <td>{{ book.name }}</td>
-                                <td>{{ book.book_name }}</td>
-                                <td><a href="{% url 'workbook_edit' book.id %}" class="btn btn-sm text-nowrap btn-success">edit</a></td>
-                                <td><input type="hidden" name="Process" value="{{ book.process }}"></td>
-                                <td><input type="hidden" name="ExistFlg" value="{{ book.exist_flg }}"></td>
-                                <td><input type="hidden" id="{{ book.id }}"></td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    <!-- ページネーション -->
-                    <nav aria-label="Page navigation">
-                        <ul class="pagination">
-                            <!-- 前のページ -->
-                            {% if workbooks %}
-                            {% if workbooks.has_previous %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ workbooks.previous_page_number }}"><<</a>
-                            </li>
-                            {% else %}
-                            <li class="disabled">
-                                <div class="page-link text-secondary d-inline-block disabled" href="#"><<</div>
-                            </li>
-                            {% endif %}
-                            {% endif %}
-                            <!-- #前のページ -->
-                            
-                            <!-- ページ番号 -->
-                            {% if workbooks %}
-                            {% if workbooks.has_previous %}
-                            {% if workbooks.previous_page_number != 1 %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page=1">1</a></li>
-                            <li>…</li>
-                            {% endif %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ workbooks.previous_page_number }}">{{ workbooks.previous_page_number}}</a></li>
-                            {% endif %}
-                            <li class="disabled">
-                                <div class="page-link text-secondary d-inline-block disabled" href="#">{{ workbooks.number}}
+            <!-- 一覧 -->
+            <div class="row">
+                <table class="table table-sm table-striped table-hober">
+                    <thead class="sticke-top table-dark">
+                        <th></th>
+                        <th>name</th>
+                        <th>book_name</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </thead>
+                    <tbody>
+                        {% for book in workbooks %}
+                        <tr>
+                            <td>
+                                <div class="btn-group mo-3" role="group">
+                                    <a href="#" class="btn text-nowrap btn-info"
+                                        onclick="setProcess({{ book.id }}, 'Create')"><i
+                                            class="bi bi-file-earmark-pdf"></i></a>
+                                    <a href="#" class="btn text-nowrap btn-light"
+                                        onclick="setProcess({{ book.id }}, 'Clear')">
+                                        <i class="bi bi-eraser-fill"></i>
+                                    </a>
+                                    <a href="#" class="btn text-nowrap btn-danger"
+                                        onclick="setProcess({{ book.id }}, 'Delete')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
                                 </div>
-                            </li>
-                            {% if workbooks.has_next %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ workbooks.next_page_number }}">{{workbooks.next_page_number }}</a></li>
-                            {% if workbooks.next_page_number != workbooks.paginator.num_pages %}
-                            <li>…</li>
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ workbooks.paginator.num_pages }}">{{workbooks.paginator.num_pages }}</a></li>
-                            {% endif %}
-                            {% endif %}
-                            {% endif %}
-                            <!-- #ページ番号 -->
-                            
-                            <!-- 次のページ -->
-                            {% if workbooks %}
-                            {% if workbooks.has_next %}
-                            <li><a class="page-link text-primary d-inline-block" href="?page={{ workbooks.next_page_number }}">>></a></li>
-                            {% else %}
-                            <li class="disabled">
-                                <div class="page-link text-secondary d-inline-block disabled" href="#">>></div>
-                            </li>
-                            {% endif %}
-                            {% endif %}
-                            <!-- #次のページ -->
-                        </ul>
-                    </nav>
-                    <!-- #ページネーション -->
-                </div>
-                <!-- #一覧 -->
+                            </td>
+                            <td class="name">{{ book.name }}</td>
+                            <td class="book_name">{{ book.book_name }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <!-- 置換セット -->
+                                    <a href="#" class="btn btn-light" onclick="setReplace({{book.id}})">
+                                        <i class="bx bx-repost"></i>
+                                    </a>
+                                    <!-- 編集ボタン -->
+                                    <a href="{% url 'workbook_edit' book.id %}" class="btn btn-success">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                            <td><input type="hidden" name="Process" value="{{ book.process }}"></td>
+                            <td><input type="hidden" name="ExistFlg" value="{{ book.exist_flg }}"></td>
+                            <td><input type="hidden" id="{{ book.id }}"></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- ページネーション -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <!-- 前のページ -->
+                        {% if workbooks %}
+                        {% if workbooks.has_previous %}
+                        <li><a class="page-link text-primary d-inline-block"
+                                href="?page={{ workbooks.previous_page_number }}">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="disabled">
+                            <div class="page-link text-secondary d-inline-block disabled" href="#">
+                                <i class="bi bi-chevron-double-left"></i>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                        <!-- #前のページ -->
+
+                        <!-- ページ番号 -->
+                        {% if workbooks %}
+                        {% if workbooks.has_previous %}
+                        {% if workbooks.previous_page_number != 1 %}
+                        <li><a class="page-link text-primary d-inline-block" href="?page=1">1</a></li>
+                        <li>…</li>
+                        {% endif %}
+                        <li><a class="page-link text-primary d-inline-block"
+                                href="?page={{ workbooks.previous_page_number }}">{{workbooks.previous_page_number}}</a>
+                        </li>
+                        {% endif %}
+                        <li class="disabled">
+                            <div class="page-link text-secondary d-inline-block disabled" href="#">{{ workbooks.number}}
+                            </div>
+                        </li>
+                        {% if workbooks.has_next %}
+                        <li><a class="page-link text-primary d-inline-block"
+                                href="?page={{ workbooks.next_page_number }}">{{workbooks.next_page_number }}</a></li>
+                        {% if workbooks.next_page_number != workbooks.paginator.num_pages %}
+                        <li>…</li>
+                        <li><a class="page-link text-primary d-inline-block"
+                                href="?page={{ workbooks.paginator.num_pages }}">{{workbooks.paginator.num_pages }}</a>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                        {% endif %}
+                        <!-- #ページ番号 -->
+
+                        <!-- 次のページ -->
+                        {% if workbooks %}
+                        {% if workbooks.has_next %}
+                        <li><a class="page-link text-primary d-inline-block"
+                                href="?page={{ workbooks.next_page_number }}"><i
+                                    class="bi bi-chevron-double-right"></i></a></li>
+                        {% else %}
+                        <li class="disabled">
+                            <div class="page-link text-secondary d-inline-block disabled" href="#"><i
+                                    class="bi bi-chevron-double-right"></i></div>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                        <!-- #次のページ -->
+                    </ul>
+                </nav>
+                <!-- #ページネーション -->
+            </div>
+            <!-- #一覧 -->
 
         </div>
-    </div>    
+    </div>
 </section>
 {% load static %}
 <script src="{% static 'js/workbook.js' %}"></script>
@@ -220,8 +272,17 @@
                 console.log(errorThrown);
             });;
     }
-    $('input[type="checkbox"]').on('click',function(){
+    $('input[type="checkbox"]').on('click', function () {
         $('#search').click()
     })
+    function setReplace(id) {
+        var name = $('[id=' + id + ']').closest('tr').find('.name');
+        var book_name = $('[id=' + id + ']').closest('tr').find('.book_name');
+
+        console.log($(name).text())
+
+        $('#txtReplace_b').val($(name).text())
+        $('#txtReplace_a').val($(book_name).text())
+    }
 </script>
 {% endblock %}

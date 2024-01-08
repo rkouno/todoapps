@@ -30,7 +30,7 @@
             <tbody>
               {% for anime in animeTorrents %}
               <tr>
-                <td>{{ anime.title }}</td>
+                <td>{{ anime.group.title }}（{{ anime.episode }}）</td>
               </tr>
               {% endfor %}
             </tbody>
@@ -53,7 +53,7 @@
             <tbody>
               {% for book in bookTorrents %}
               <tr>
-                <td>{{ book.title }}</td>
+                <td>{{ book.book_name }}</td>
               </tr>
               {% endfor %}
             </tbody>

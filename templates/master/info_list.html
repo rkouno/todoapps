@@ -58,7 +58,7 @@
                     <tbody>
                         {% for model in comics %}
                         <tr>
-                            <td><a href="{% url 'info_edit' model.book_id %}" >{{ model.series.series_name }}</a></td>
+                            <td><a href="{% url 'info_edit' model.id %}" >{{ model.series.series_name }}</a></td>
                             <td>{{ model.title }} {{ model.sub_title }}</td>
                         </tr>
                         {% endfor %}
@@ -78,7 +78,7 @@
                     <tbody>
                         {% for model in novels %}
                         <tr>
-                            <td><a href="{% url 'info_edit' model.book_id %}" >{{ model.series.series_name }}</a></td>
+                            <td><a href="{% url 'info_edit' model.id %}" >{{ model.series.series_name }}</a></td>
                             <td>{{ model.title }} {{ model.sub_title }}</td>
                         </tr>
                         {% endfor %}
@@ -98,7 +98,7 @@
                     <tbody>
                         {% for model in adults %}
                         <tr>
-                            <td><a href="{% url 'info_edit' model.book_id %}" >{{ model.series.series_name }}</a></td>
+                            <td><a href="{% url 'info_edit' model.id %}" >{{ model.series.series_name }}</a></td>
                             <td>{{ model.title }} {{ model.sub_title }}</td>
                         </tr>
                         {% endfor %}

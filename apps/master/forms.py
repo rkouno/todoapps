@@ -57,8 +57,9 @@ class AuthorForm(forms.ModelForm):
         model = Author
         fields = "__all__"
         widgets = {
-            'author_id'   :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Author ID'}), 
-            'author_name' :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Author name'}), 
+            'id'            :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Author ID'}), 
+            'author_name'   :forms.TextInput(attrs={'class':'form-control', 'placeholder':'Author name'}), 
+            'kana'          :forms.widgets.Select(attrs={'class':'form-select'}),
         }
 
 class InfoForm(forms.ModelForm):
@@ -66,7 +67,7 @@ class InfoForm(forms.ModelForm):
         model = Info
         fields = "__all__"
         widgets = {
-            'book_id'   : forms.TextInput(attrs={'class':'form-control', 'placeholder':'Book ID'}),
+            'id'   : forms.TextInput(attrs={'class':'form-control', 'placeholder':'Book ID'}),
             'genrue'    : forms.widgets.Select(attrs={'class':'form-select'}),
             'story_by'  : forms.widgets.Select(attrs={'class':'form-select'}),
             'art_by'    : forms.widgets.Select(attrs={'class':'form-select'}),
@@ -80,3 +81,13 @@ class InfoForm(forms.ModelForm):
             queryset=Series.objects.none(), #空のクエリセット
             widget=forms.widgets.Select
         )
+    story_by = forms.ModelChoiceField(
+        queryset = Author.objects.all().order_by('kana','author_name'),
+        widget   = forms.widgets.Select(attrs={'class':'form-select'}),
+        required=False
+    )
+    art_by = forms.ModelChoiceField(
+        queryset = Author.objects.all().order_by('kana','author_name'),
+        widget   = forms.widgets.Select(attrs={'class':'form-select'}),
+        required=False
+    )

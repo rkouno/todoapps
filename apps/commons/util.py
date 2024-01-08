@@ -40,7 +40,7 @@ class utils:
     def getFiles(path, extentions):
         files = []
         for extentoin in extentions:
-            files.extend(glob.glob(f'{glob.escape(path)}/**/*.{extentoin}', recursive=True))
+            files.extend(glob.glob(f'{glob.escape(path)}/**/*{extentoin}', recursive=True))
         replace_files = [s.replace('\\', '/') for s in files]
         return sorted(set(replace_files))
 
@@ -50,7 +50,7 @@ class utils:
     def getFolders(path, extentions):
         folders = []
         for extention in extentions:
-            for folder in glob.glob(f'{glob.escape(path)}/**/*.{extention}', recursive=True):
+            for folder in glob.glob(f'{glob.escape(path)}/**/*{extention}', recursive=True):
                 folders.append(os.path.dirname(folder))
                 continue
 
@@ -142,6 +142,15 @@ class utils:
     def isDir(path):
         return os.path.isdir(path)
     """
+    ファイルをフォルダへ移動
+    """
+    def moveToFolder(file, dir):
+        if not utils.isDir(dir):
+            # フォルダなければ作成
+            os.mkdir(dir)
+         # 上書きして移動
+        shutil.move(file, dir)
+    """
     空フォルダ削除
     """
     def folderEmptyDelete(path):
@@ -187,7 +196,11 @@ class utils:
     """
     def replace(txtReplace, txtReplace_b, txtReplace_a):
         return re.sub(txtReplace_b, txtReplace_a, txtReplace)
-    
+    """
+    エスケープ
+    """
+    def escape(text):
+        return text.replace("/","／")
     """
     月末日の取得
     """
@@ -210,6 +223,14 @@ class utils:
         subprocess.check_call(f'{appconst.UNZIP_BAT} "{zip_file}"',shell=True)
         return True
     
+    """
+    ファイル圧縮
+    """
+    def zip(zip_folder):
+        print(zip_folder)
+        subprocess.check_call(f'{appconst.ZIP_BAT} "{zip_folder}"',shell=True)
+        return True
+    
     def convertAvif(folder):
         for file in utils.getFiles(folder, appconst.EXTENTION_AVIF):
             fileName = utils.getFileName(file)
@@ -217,3 +238,8 @@ class utils:
             if proc.poll():
                 utils.fileDelete(file)
                 print(f'deleted : {file}')
+
+    # バッチ処理の実行
+    def runBat(bat_file):
+        subprocess.check_call(bat_file, shell=True)
+        return True

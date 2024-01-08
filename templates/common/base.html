@@ -29,7 +29,7 @@
     <link href="{% static 'vendor/quill/quill.bubble.css' %}" rel="stylesheet">
     <link href="{% static 'vendor/remixicon/remixicon.css' %}" rel="stylesheet">
     <link href="{% static 'vendor/simple-datatables/style.css' %}" rel="stylesheet">
-    
+
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -263,20 +263,20 @@
             <!-- End Dashboard Nav -->
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#download-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-menu-button-wide"></i><span>Download</span><i
-                        class="bi bi-chevron-down ms-auto"></i>
+                    <i class="bi bi-cloud-download"></i><span>Download</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="download-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li><a href="/anime"><i class="bi bi-circle"></i><span>Anime</span></a></li>
                     <li><a href="/book/nyaa"><i class="bi bi-circle"></i><span>Nyaa</span></a></li>
                     <li><a href="/book/sukebei"><i class="bi bi-circle"></i><span>Sukebei</span></a></li>
+                    <li><a href="/book/check"><i class="bi bi-circle"></i><span>Check</span></a></li>
                 </ul>
             </li>
             <!-- End Download Nav -->
             <li class="nav-heading">Downloaded Files</li>
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#video-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-bar-chart"></i><span>Video</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <i class="bi bi-camera-reels-fill"></i><span>Video</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="video-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li><a href="/anime/video/0"><i class="bi bi-circle"></i><span>Anime</span></a></li>
@@ -288,20 +288,22 @@
             <!-- Book Nav -->
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#book-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-bar-chart"></i><span>Books</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <i class="bi bi-book"></i><span>Books</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="book-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li><a href="/book/create"><i class="bi bi-circle"></i><span>Create</span></a></li>
-                    <li><a href="/library/general/0"><i class="bi bi-circle"></i><span>Comic・Novel</span></a></li>
-                    <li><a href="/library/hentai/0"><i class="bi bi-circle"></i><span>Hentai</span></a></li>
+                    <li><a href="/library/general/0"><i class="bi bi-circle"></i><span>Library</span></a></li>
+                    <!-- <li><a href="/library/hentai/0"><i class="bi bi-circle"></i><span>Hentai</span></a></li> -->
                     <li><a href="/library/revice"><i class="bi bi-circle"></i><span>Revice</span></a></li>
                 </ul>
             </li>
             <!-- #Book Nav -->
 
+            <li class="nav-heading">Maintenance</li>
+
             <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-gem"></i><span>Master</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <i class="bi bi-pencil"></i><span>Master</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
                 <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
                     <li><a href="/master/adult"><i class="bi bi-circle"></i><span>Hentai</span></a></li>
@@ -312,7 +314,7 @@
                 </ul>
             </li><!-- End Icons Nav -->
 
-            <li class="nav-heading">Pages</li>
+            <li class="nav-heading">page</li>
 
             <li class="nav-item">
                 <a class="nav-link collapsed" href="users-profile.html">

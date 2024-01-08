@@ -46,7 +46,7 @@ class Video(models.Model):
         return self.title
     
     def link(self):
-        return self.url.replace('http://localhost', appconst.MEDIA_URL)
+        return self.url.replace('http://localhost/', appconst.VIDEO_URL)
 
 class Kana(models.Model):
     kana  = models.CharField(max_length=2, blank=False, null=False, verbose_name='読み仮名')

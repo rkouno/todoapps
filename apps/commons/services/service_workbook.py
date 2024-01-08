@@ -64,6 +64,7 @@ def getLatestList():
     # 最新化    
     for item in file_folder:
         name = utils.getFileName(item)
+        print(name)
         wb = Workbook.objects.filter(path__exact=item)
         if not wb:
             # 登録
@@ -163,13 +164,17 @@ def next(id):
     return next
 # 実行
 def execute():
+    errMsg = []
     tpe = ThreadPoolExecutor(max_workers=10)
     for workbook in Workbook.objects.filter(Q(process='Create') | Q(process='Delete')) :
         try:
             tpe.submit(thread_create(workbook))
         except Exception as e:
             print(e)
+            errMsg.append(e)
     tpe.shutdown()
+    if errMsg:
+        raise ValueError(errMsg)
 # スレッド
 def thread_create(workbook):
     path = workbook.path.replace('\\','/')
@@ -223,8 +228,8 @@ def update(form, genrue_id, story_by,art_by, title, sub_title, volume):
     workbook.book_name   = book_name.strip()
     workbook.save_path   = f"{save_path}{book_name}{extention}"
     workbook.exist_flg   = utils.existFile(save_path + book_name + extention)
-    workbook.story_by_id = author_story.author_id
-    workbook.art_by_id   = author_story.author_id
+    workbook.story_by_id = author_story.id
+    workbook.art_by_id   = author_story.id
     
     # シリーズ登録
     series_name = ''
@@ -238,18 +243,23 @@ def update(form, genrue_id, story_by,art_by, title, sub_title, volume):
     info   = si.info_commit(
         genrue.genrue_id, 
         series.series_name, 
-        author_story.author_id, 
-        author_art.author_id, 
+        author_story.id, 
+        author_art.id, 
         title, 
         sub_title)
-    workbook.book_id = info.book_id
+    workbook.book_id = info.id
 
     workbook.save()
 
+# 全削除
+def clear():
+    Workbook.objects.all().delete()
+
 def unzip():
-    for file in utils.getFiles(appconst.FOLDER_TORRENT, appconst.EXTENTION_ZIP):
-        utils.unzip(file, appconst.FOLDER_TORRENT)
-        utils.fileDelete(file)
+    utils.runBat(appconst.UNZIP_BAT)
+    # for file in utils.getFiles(appconst.FOLDER_TORRENT, appconst.EXTENTION_ZIP):
+    #     utils.unzip(file, appconst.FOLDER_TORRENT)
+    #     utils.fileDelete(file)
 
 def convertAvif():
     for folder in utils.getFolders(appconst.FOLDER_TORRENT, appconst.EXTENTION_AVIF):

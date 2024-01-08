@@ -35,16 +35,16 @@ def searchBookInfo(genrue_id, title, sub_title):
             order_by('title', 'sub_title')
     return bi
 # ジャンルの取得
-def getGenrueId(book_id):
-    return Info.objects.filter(book_id=book_id).first().genrue.genrue_id
+def getGenrueId(id):
+    return Info.objects.filter(id=id).first().genrue.genrue_id
 # 登録
 @transaction.atomic
 def info_commit(genrue_id, series_id, story_by_id, art_by_id, title, sub_title):
     info, created = Info.objects.get_or_create(
         genrue_id   = genrue_id,
         series_id   = series_id,
-        story_by_id = sa.get(story_by_id).author_id,
-        art_by_id   = sa.get(art_by_id).author_id,
+        story_by_id = sa.get(story_by_id).id,
+        art_by_id   = sa.get(art_by_id).id,
         title       = title,
         sub_title   = sub_title,
         save_path   = Path.objects.get(genrue_id=genrue_id),
@@ -64,9 +64,13 @@ def savePath(id):
     path = Path.objects.get(pk=id)
     return path.path
 
-def rawObjects(sql):
-    bi = Info.objects.raw(sql)
+def rawObjects(sql, param):
+    bi = Info.objects.raw(sql, param)
     return bi
+
+# def rawObjects(sql):
+#     bi = Info.objects.raw(sql)
+#     return bi
 
 def searchInfo(filter):
     infos = Info.objects.filter(filter)

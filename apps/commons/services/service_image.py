@@ -12,7 +12,8 @@ def getImages(path):
     Image.objects.all().delete()
     # Autoincremantのリセット
     cursor = connection.cursor()
-    cursor.execute("DELETE FROM sqlite_sequence WHERE name = 'book_image'")
+    # cursor.execute("DELETE FROM sqlite_sequence WHERE name = 'book_image'")
+    cursor.execute("SELECT SETVAL ('public.book_image_id_seq', 1, false);")
     
     for list in sorted(utils.getFiles(f'{path}/', appconst.EXTENTION_IMAGE), key=utils.natural_keys):
         list = list.replace('\\','/')

@@ -27,9 +27,9 @@ class appconst:
     """
     PROTCOL     = "http://"
     IP_ADDRESS  = socket.gethostbyname(socket.gethostname())
-    VIDEO_URL   = PROTCOL + 'localhost/Video/'
     TORRENT_URL = PROTCOL + IP_ADDRESS + '/Torrent/'
-    MEDIA_URL   = PROTCOL + IP_ADDRESS + ':80/'
+    MEDIA_URL   = PROTCOL + IP_ADDRESS + ':8080/'
+    VIDEO_URL   = PROTCOL + IP_ADDRESS + ':80/Video/'
 
     """
     ディレクトリ
@@ -47,6 +47,7 @@ class appconst:
     FOLDER_BOOK_ADULT_NOVEL = os.path.join(FOLDER_ROOT_BOOK, 'adult_novel/')
     FOLDER_BOOK_COMIC       = os.path.join(FOLDER_ROOT_BOOK, 'comic/')
     FOLDER_BOOK_NOVEL       = os.path.join(FOLDER_ROOT_BOOK, 'novel/')
+    FOLDER_BOOK_COMPLATE    = os.path.join(FOLDER_ROOT_BOOK, 'complate/')
 
     FOLDER_MEDIA            = os.path.join(FOLDER_STATIC, 'media/')
     FOLDER_ROOT_UNWATCH     = os.path.join(FOLDER_MEDIA,'unwatch/')
@@ -59,16 +60,17 @@ class appconst:
     """
     Bat
     """
-    UNZIP_BAT = os.path.join(FOLDER_TORRENT, 'unzip.bat')
-
+    UNZIP_BAT = os.path.join(FOLDER_BAT, 'unzip_and_convert.bat')
+    ZIP_BAT = os.path.join(FOLDER_BAT, 'zip.bat')
     """
     拡張子
     """
-    EXTENTION_IMAGE = ("png", "PNG", "jpeg", "jpg", "JPG")
+    EXTENTION_IMAGE = (".png", ".PNG", ".jpeg", ".jpg", ".JPG")
     EXTENTION_BOOK  = ("pdf", "epub")
     EXTENTION_VIDEO = ("mp4", "mkv")
     EXTENTION_ZIP   = ("zip", "rar", "7z")
     EXTENTION_AVIF  = ("avif",)
+    
     """
     正規表現
     """

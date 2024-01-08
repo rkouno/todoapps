@@ -42,9 +42,11 @@
                     <button type="submit" name="delete" class="btn btn-secondary">delete</button>
                     {% if 'hentai' in request.path %}
                     <a href="{% url 'adult_edit' id=video.id %}" class="btn btn btn-success">edit</a>
-                    <a href="/anime/hentai/{{ request.session.sort_code }}" class="save btn btn-outline-dark">back</a>
+                    <a href="/anime/hentai/{{ request.session.video_sort_code }}"
+                        class="save btn btn-outline-dark">back</a>
                     {% else %}
-                    <a href="/anime/video/{{ request.session.sort_code }}" class="save btn btn-outline-dark">back</a>
+                    <a href="/anime/video/{{ request.session.video_sort_code }}"
+                        class="save btn btn-outline-dark">back</a>
                     {% endif %}
                 </form>
             </div>
